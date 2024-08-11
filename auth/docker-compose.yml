@@ -1,0 +1,40 @@
+services:
+  mysql-db:
+    image: mysql:8.0.34
+    container_name: mysql-container
+    ports:
+      - "3307:3306"
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATASOURCE_PASSWORD}
+      MYSQL_DATABASE: auth
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:6.2.11
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  mysql-data:
+
+networks:
+  default:
+    driver: bridge

@@ -93,6 +93,8 @@ eureka:
   instance:
     initial-status: up
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
   client:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/

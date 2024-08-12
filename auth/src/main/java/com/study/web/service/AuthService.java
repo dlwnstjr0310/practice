@@ -148,6 +148,7 @@ public class AuthService {
 				.ifPresentOrElse(member -> {
 							if (passwordEncoder.matches(request.password(), member.getPassword())) {
 								mailService.sendMail(request.email(), false);
+								redisService.deleteTargetInRedis(member.getId().toString());
 							} else {
 								throw new InvalidPasswordException();
 							}

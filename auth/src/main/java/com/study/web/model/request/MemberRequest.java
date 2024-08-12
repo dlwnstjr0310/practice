@@ -67,9 +67,19 @@ public class MemberRequest {
 
 			@NotBlank
 			String accessToken,
-			
+
 			@NotNull
 			Boolean isAllDevice
 	) {
+	}
+
+	public record ReissueAccessToken(
+			@NotBlank
+			Long id,
+
+			@NotBlank
+			String accessToken
+	) {
+
 	}
 }

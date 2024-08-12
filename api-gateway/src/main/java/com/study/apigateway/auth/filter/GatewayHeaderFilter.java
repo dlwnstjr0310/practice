@@ -42,6 +42,8 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 				//todo: 토큰이 비어있을때 설정 추가해야함
 				if (!ObjectUtils.isEmpty(token) && tokenParser.isValidToken(token)) {
 					// 토큰이 유효하면 다음 필터로 이동
+					// 토큰이 없으면 /auth 로 이동
+					// 만료되었으면 /auth/token 으로 이동
 					return chain.filter(exchange);
 				}
 			} catch (ExpiredTokenException e) {

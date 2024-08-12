@@ -53,10 +53,27 @@ public class AuthController implements AuthControllerDocs {
 				.build();
 	}
 
-	@PostMapping("/logout")
+	@DeleteMapping("/logout")
 	public Response<Void> logout(@Valid @RequestBody MemberRequest.Logout request) {
 
 		authService.logout(request);
+
+		return Response.<Void>builder()
+				.build();
+	}
+
+	@PostMapping("/token")
+	public Response<MemberResponse.Info> reissueAccessToken(@Valid @RequestBody MemberRequest.ReissueAccessToken request) {
+
+		return Response.<MemberResponse.Info>builder()
+				.data(authService.reissueAccessToken(request))
+				.build();
+	}
+
+	@PatchMapping("/modify-password")
+	public Response<Void> modifyPassword(@Valid @RequestBody MemberRequest.Login request) {
+
+		authService.modifyPassword(request);
 
 		return Response.<Void>builder()
 				.build();

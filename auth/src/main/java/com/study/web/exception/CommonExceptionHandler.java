@@ -30,20 +30,6 @@ public class CommonExceptionHandler {
 				.build();
 	}
 
-	//todo: 로직에서 검사할일 없으면 필요없을듯?
-	@ExceptionHandler(TokenException.class)
-	public Response<Void> tokenExceptionHandler(TokenException e) {
-
-		Error tokenError = e.getError();
-
-		log.warn("token exception info : {} ", e.getMessage());
-
-		return Response.<Void>builder()
-				.code(tokenError.getCode())
-				.message(tokenError.getMessage())
-				.build();
-	}
-
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public Response<Void> validExceptionHandler(MethodArgumentNotValidException e) {

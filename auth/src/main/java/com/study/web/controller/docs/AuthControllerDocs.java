@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -50,13 +53,36 @@ public interface AuthControllerDocs {
 	@PostMapping("/auth/login")
 	Response<MemberResponse.Info> login(MemberRequest.Login request);
 
-	@Operation(summary = "로그아웃", description = "사용자 로그아웃 API 입니다.")
+	@Operation(summary = "로그아웃", description = """
+			사용자 로그아웃 API 입니다. \n
+			isAllDevice 속성을 통해 모든 기기에서 로그아웃 할 수 있습니다.
+			""")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "로그아웃 성공", content = @Content(schema = @Schema(implementation = Response.class))),
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
-	@PostMapping("/logout")
+	@DeleteMapping("/logout")
 	Response<Void> logout(@RequestBody MemberRequest.Logout request);
 
+	@Operation(summary = "토큰 재발급", description = "Access Token 재발급 API 입니다.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = @Content(schema = @Schema(implementation = Response.class))),
+			@ApiResponse(responseCode = "401", description = """
+					1.토큰이 만료되었습니다. \n
+					2.잘못된 토큰입니다.
+					""", content = @Content(schema = @Schema(implementation = Response.class))),
+			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@PostMapping("/auth/token")
+	Response<MemberResponse.Info> reissueAccessToken(@Valid @RequestBody MemberRequest.ReissueAccessToken request);
+
+	@Operation(summary = "비밀번호 변경", description = "사용자 비밀번호 변경 API 입니다.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "가입 시 등록한 이메일로 임시 비밀번호가 발송되었습니다.", content = @Content(schema = @Schema(implementation = Response.class))),
+			@ApiResponse(responseCode = "401", description = "비밀번호가 일치하지 않습니다.", content = @Content(schema = @Schema(implementation = Response.class))),
+			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@PatchMapping("/modify-password")
+	Response<Void> modifyPassword(@Valid @RequestBody MemberRequest.Login request);
 }
 

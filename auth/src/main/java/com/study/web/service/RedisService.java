@@ -1,5 +1,6 @@
 package com.study.web.service;
 
+import com.study.web.auth.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisService {
 
 	private static final long TEMP_TEXT_EXPIRED_SECOND = 5L * 60L;
+	private final TokenProvider tokenProvider;
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	public void storeTempCertificationTextInRedis(String email, String certificationText) {
@@ -42,8 +44,18 @@ public class RedisService {
 
 		map.put(refreshToken, accessToken);
 
-		// 유효기간은 토큰 까봐야 알수있음
 		redisTemplate.opsForHash().putAll(id, map);
+	}
+
+	public void findRefreshTokenInRedis(String id, String accessToken) {
+
+		redisTemplate.opsForHash().entries(id)
+				.forEach((k, v) -> {
+					if (v.toString().equals(accessToken)) {
+						// 여기서 refreshToken 검증하고, 문제없으면 진행
+						tokenProvider.parseClaims(k.toString());
+					}
+				});
 	}
 
 	public void deleteTargetInRedis(String key) {

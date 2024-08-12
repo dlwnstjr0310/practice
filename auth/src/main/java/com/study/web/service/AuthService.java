@@ -8,7 +8,6 @@ import com.study.web.model.request.MemberRequest;
 import com.study.web.model.response.MemberResponse;
 import com.study.web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -37,6 +35,7 @@ public class AuthService {
 
 		Member member = request.toEntity();
 
+		//todo: 개인정보도 암호화 해야하는데 너무귀찮음
 		member.setPassword(passwordEncoder.encode(member.getPassword()));
 
 		memberRepository.save(member);
@@ -56,7 +55,6 @@ public class AuthService {
 
 		String text = redisService.getTempCertificationTextInRedis(request.email());
 
-		log.info("구조 확인좀 : {} ", text);
 		if (Objects.requireNonNull(text).isEmpty()) {
 			throw new ExpiredCertificationNumberException();
 		}
@@ -124,5 +122,39 @@ public class AuthService {
 		} else {
 			redisService.deleteTargetInRedis(request.id().toString(), request.accessToken());
 		}
+	}
+
+	@Transactional
+	public MemberResponse.Info reissueAccessToken(MemberRequest.ReissueAccessToken request) {
+
+		// 여기서도 에러나면 걍 로그인 다시해야함
+		redisService.findRefreshTokenInRedis(request.id().toString(), request.accessToken());
+
+		Member member = memberRepository.findById(request.id())
+				.orElseThrow(NotFoundMemberException::new);
+
+		return new MemberResponse.Info(
+				tokenProvider.generateToken(member, ACCESS_TOKEN_EXPIRE_TIME_MILLIS),
+				member.getId(),
+				member.getEmail(),
+				member.getName()
+		);
+	}
+
+	@Transactional
+	public void modifyPassword(MemberRequest.Login request) {
+
+		memberRepository.findByEmail(request.email())
+				.ifPresentOrElse(member -> {
+							if (passwordEncoder.matches(request.password(), member.getPassword())) {
+								mailService.sendMail(request.email(), false);
+							} else {
+								throw new InvalidPasswordException();
+							}
+						}
+						, () -> {
+							throw new NotFoundMemberException();
+						}
+				);
 	}
 }

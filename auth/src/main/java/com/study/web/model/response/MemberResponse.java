@@ -1,6 +1,6 @@
 package com.study.web.model.response;
 
-public class LoginResponse {
+public class MemberResponse {
 
 	public record Info(
 			String accessToken,

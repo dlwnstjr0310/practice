@@ -2,7 +2,7 @@ package com.study.web.controller;
 
 import com.study.web.controller.docs.AuthControllerDocs;
 import com.study.web.model.request.MemberRequest;
-import com.study.web.model.response.LoginResponse;
+import com.study.web.model.response.MemberResponse;
 import com.study.web.model.response.Response;
 import com.study.web.service.AuthService;
 import jakarta.validation.Valid;
@@ -38,12 +38,27 @@ public class AuthController implements AuthControllerDocs {
 	}
 
 	@PostMapping("/mail-certification/verify")
-	public Response<LoginResponse.Info> verifyMail(@Valid @RequestBody MemberRequest.Verify request) {
+	public Response<MemberResponse.Info> verifyMail(@Valid @RequestBody MemberRequest.Verify request) {
 
-		return Response.<LoginResponse.Info>builder()
-				.code(HttpStatus.OK.value())
-				.message(HttpStatus.OK.getReasonPhrase())
+		return Response.<MemberResponse.Info>builder()
 				.data(authService.verifyMail(request))
+				.build();
+	}
+
+	@PostMapping("/login")
+	public Response<MemberResponse.Info> login(@Valid @RequestBody MemberRequest.Login request) {
+
+		return Response.<MemberResponse.Info>builder()
+				.data(authService.login(request))
+				.build();
+	}
+
+	@PostMapping("/logout")
+	public Response<Void> logout(@Valid @RequestBody MemberRequest.Logout request) {
+
+		authService.logout(request);
+
+		return Response.<Void>builder()
 				.build();
 	}
 }

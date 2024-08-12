@@ -1,8 +1,8 @@
 package com.study.web.controller;
 
 import com.study.web.controller.docs.AuthControllerDocs;
-import com.study.web.model.request.MemberRequest;
-import com.study.web.model.response.MemberResponse;
+import com.study.web.model.request.*;
+import com.study.web.model.response.MemberResponseDTO;
 import com.study.web.model.response.Response;
 import com.study.web.service.AuthService;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ public class AuthController implements AuthControllerDocs {
 	private final AuthService authService;
 
 	@PostMapping("/join")
-	public Response<Void> join(@Valid @RequestBody MemberRequest.Join request) {
+	public Response<Void> join(@Valid @RequestBody JoinDTO request) {
 
 		authService.join(request);
 
@@ -38,23 +38,23 @@ public class AuthController implements AuthControllerDocs {
 	}
 
 	@PostMapping("/mail-certification/verify")
-	public Response<MemberResponse.Info> verifyMail(@Valid @RequestBody MemberRequest.Verify request) {
+	public Response<MemberResponseDTO> verifyMail(@Valid @RequestBody VerifyDTO request) {
 
-		return Response.<MemberResponse.Info>builder()
+		return Response.<MemberResponseDTO>builder()
 				.data(authService.verifyMail(request))
 				.build();
 	}
 
 	@PostMapping("/login")
-	public Response<MemberResponse.Info> login(@Valid @RequestBody MemberRequest.Login request) {
+	public Response<MemberResponseDTO> login(@Valid @RequestBody LoginDTO request) {
 
-		return Response.<MemberResponse.Info>builder()
+		return Response.<MemberResponseDTO>builder()
 				.data(authService.login(request))
 				.build();
 	}
 
 	@DeleteMapping("/logout")
-	public Response<Void> logout(@Valid @RequestBody MemberRequest.Logout request) {
+	public Response<Void> logout(@Valid @RequestBody LogoutDTO request) {
 
 		authService.logout(request);
 
@@ -63,15 +63,15 @@ public class AuthController implements AuthControllerDocs {
 	}
 
 	@PostMapping("/token")
-	public Response<MemberResponse.Info> reissueAccessToken(@Valid @RequestBody MemberRequest.ReissueAccessToken request) {
+	public Response<MemberResponseDTO> reissueAccessToken(@Valid @RequestBody ReissueAccessTokenDTO request) {
 
-		return Response.<MemberResponse.Info>builder()
+		return Response.<MemberResponseDTO>builder()
 				.data(authService.reissueAccessToken(request))
 				.build();
 	}
 
 	@PatchMapping("/modify-password")
-	public Response<Void> modifyPassword(@Valid @RequestBody MemberRequest.Login request) {
+	public Response<Void> modifyPassword(@Valid @RequestBody LoginDTO request) {
 
 		authService.modifyPassword(request);
 

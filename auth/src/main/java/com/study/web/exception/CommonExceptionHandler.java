@@ -57,16 +57,4 @@ public class CommonExceptionHandler {
 				.message(Error.INTERNAL_SERVER_ERROR.getMessage())
 				.build();
 	}
-
-	private Response<Void> createResponse(Error authError) {
-		return createResponse(authError.getCode(), authError.getMessage());
-	}
-
-	private Response<Void> createResponse(Integer code, String message) {
-		return Response.<Void>builder()
-				.code(code)
-				.message(message)
-				.build();
-	}
-
 }

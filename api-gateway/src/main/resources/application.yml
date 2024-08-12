@@ -25,6 +25,12 @@ spring:
             - Path=${FIRST_PATH}
           filters:
             - GatewayHeaderFilter
+        - id: ${SECOND_ID}
+          uri: lb://${SECOND_URI}
+          predicates:
+            - Path=${SECOND_PATH}
+          filters:
+            - GatewayHeaderFilter
 
 logging:
   level:

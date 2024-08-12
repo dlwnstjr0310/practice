@@ -1,7 +1,7 @@
 package com.study.web.controller.docs;
 
-import com.study.web.model.request.MemberRequest;
-import com.study.web.model.response.MemberResponse;
+import com.study.web.model.request.*;
+import com.study.web.model.response.MemberResponseDTO;
 import com.study.web.model.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,7 +26,7 @@ public interface AuthControllerDocs {
 					""", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/auth/join")
-	Response<Void> join(MemberRequest.Join request);
+	Response<Void> join(JoinDTO request);
 
 	@Operation(summary = "이메일 인증번호 발송", description = "회원가입 진행중 등록한 이메일로 인증번호를 발송합니다.")
 	@ApiResponse(responseCode = "200", description = "이메일 발송 성공", content = @Content(schema = @Schema(implementation = Response.class)))
@@ -41,7 +41,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "408", description = "인증번호가 만료되었습니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/auth/mail-certification/verify")
-	Response<MemberResponse.Info> verifyMail(MemberRequest.Verify request);
+	Response<MemberResponseDTO> verifyMail(VerifyDTO request);
 
 	@Operation(summary = "로그인", description = "사용자 로그인 API 입니다.")
 	@ApiResponses(value = {
@@ -51,7 +51,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/auth/login")
-	Response<MemberResponse.Info> login(MemberRequest.Login request);
+	Response<MemberResponseDTO> login(LoginDTO request);
 
 	@Operation(summary = "로그아웃", description = """
 			사용자 로그아웃 API 입니다. \n
@@ -62,7 +62,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@DeleteMapping("/logout")
-	Response<Void> logout(@RequestBody MemberRequest.Logout request);
+	Response<Void> logout(@RequestBody LogoutDTO request);
 
 	@Operation(summary = "토큰 재발급", description = "Access Token 재발급 API 입니다.")
 	@ApiResponses(value = {
@@ -74,7 +74,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/auth/token")
-	Response<MemberResponse.Info> reissueAccessToken(@Valid @RequestBody MemberRequest.ReissueAccessToken request);
+	Response<MemberResponseDTO> reissueAccessToken(@Valid @RequestBody ReissueAccessTokenDTO request);
 
 	@Operation(summary = "비밀번호 변경", description = "사용자 비밀번호 변경 API 입니다.")
 	@ApiResponses(value = {
@@ -83,6 +83,6 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PatchMapping("/modify-password")
-	Response<Void> modifyPassword(@Valid @RequestBody MemberRequest.Login request);
+	Response<Void> modifyPassword(@Valid @RequestBody LoginDTO request);
 }
 

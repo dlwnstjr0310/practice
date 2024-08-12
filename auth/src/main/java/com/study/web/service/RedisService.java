@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -14,19 +12,14 @@ import java.util.concurrent.TimeUnit;
 public class RedisService {
 
 	private static final long TEMP_TEXT_EXPIRED_SECOND = 5L * 60L;
-	private static final long ACCESS_TOKEN_EXPIRE_TIME_SECOND = 60L * 60L;
-	private static final long REFRESH_TOKEN_EXPIRE_TIME_SECOND = 14L * 24L * 60L * 60L;
-	private final RedisTemplate<String, Map<String, String>> redisTemplate;
+	private final RedisTemplate<String, Object> redisTemplate;
 
-	public void storeTempCertificationTextInRedis(String key, String value) {
+	public void storeTempCertificationTextInRedis(String email, String certificationText) {
 
-		Map<String, String> map = new HashMap<>();
-		map.put(key, value);
-
-		this.redisTemplate.opsForValue()
+		redisTemplate.opsForValue()
 				.set(
-						key,
-						map,
+						email,
+						certificationText,
 						TEMP_TEXT_EXPIRED_SECOND,
 						TimeUnit.SECONDS
 				);
@@ -35,45 +28,42 @@ public class RedisService {
 	public String getTempCertificationTextInRedis(String email) {
 
 		return Objects.requireNonNull(
-				this.redisTemplate.opsForValue().get(email)
-		).get(email);
+				redisTemplate.opsForValue().get(email)
+		).toString();
 	}
 
 	public void storeRefreshTokenInRedis(String id, String accessToken, String refreshToken) {
 
-		Map<String, String> map = this.redisTemplate.opsForValue().get(id);
+		Map<Object, Object> map = redisTemplate.opsForHash().entries(id);
 
-		if (map == null) {
+		if (map.isEmpty()) {
 			map = new HashMap<>();
 		}
 
 		map.put(refreshToken, accessToken);
 
-		this.redisTemplate.opsForValue()
-				.set(
-						id,
-						map,
-						REFRESH_TOKEN_EXPIRE_TIME_SECOND,
-						TimeUnit.SECONDS
-				);
+		// 유효기간은 토큰 까봐야 알수있음
+		redisTemplate.opsForHash().putAll(id, map);
 	}
 
 	public void deleteTargetInRedis(String key) {
-		this.redisTemplate.delete(key);
+		redisTemplate.delete(key);
 	}
 
 	public void deleteTargetInRedis(String key, String accessToken) {
 
-		Map<String, String> map = this.redisTemplate.opsForValue().get(key);
+		List<Object> removeList = new ArrayList<>();
 
-		if (map != null) {
-			map.forEach((k, v) -> {
-				if (v.equals(accessToken)) {
-					map.remove(k);
-				}
-			});
+		redisTemplate.opsForHash().entries(key).forEach((k, v) -> {
+			if (v.toString().equals(accessToken)) {
+				removeList.add(k);
+			}
+		});
 
-			this.redisTemplate.opsForValue().set(key, map);
+		if (!removeList.isEmpty()) {
+			removeList.forEach(token ->
+					redisTemplate.opsForHash().delete(key, token)
+			);
 		}
 	}
 }

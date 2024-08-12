@@ -38,7 +38,6 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 
 			String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-			System.out.println("필터 실행~");
 			try {
 				//todo: 토큰이 비어있을때 설정 추가해야함
 				if (!ObjectUtils.isEmpty(token) && tokenParser.isValidToken(token)) {

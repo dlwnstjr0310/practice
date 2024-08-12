@@ -2,6 +2,7 @@ package com.study.web.service;
 
 import com.study.web.auth.TokenProvider;
 import com.study.web.domain.entity.Member;
+import com.study.web.domain.entity.MemberRole;
 import com.study.web.exception.login.*;
 import com.study.web.model.request.MemberRequest;
 import com.study.web.model.response.MemberResponse;
@@ -68,6 +69,7 @@ public class AuthService {
 				.orElseThrow(NotFoundMemberException::new);
 
 		member.setIsLocked(false);
+		member.setMemberRole(MemberRole.ROLE_BUYER);
 		String accessToken = tokenProvider.generateToken(member, ACCESS_TOKEN_EXPIRE_TIME_MILLIS);
 
 		redisService.storeRefreshTokenInRedis(

@@ -1,0 +1,42 @@
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
+    region: ap-northeast-2
+    registry-fetch-interval-seconds: 5
+
+spring:
+  config:
+    import: classpath:application-key.yml
+  application:
+    name: gateway-server
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: ${FIRST_ID}
+          uri: lb://${FIRST_URI}
+          predicates:
+            - Path=${FIRST_PATH}
+          filters:
+            - GatewayHeaderFilter
+        - id: ${SECOND_ID}
+          uri: lb://${SECOND_URI}
+          predicates:
+            - Path=${SECOND_PATH}
+          filters:
+            - GatewayHeaderFilter
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG
+
+security:
+  jwt:
+    key: ${SECURITY_JWT_KEY}

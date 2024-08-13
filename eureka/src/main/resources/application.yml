@@ -1,0 +1,21 @@
+spring:
+  config:
+    import: classpath:application-key.yml
+  application:
+    name: ${EUREKA_HOST}
+
+server:
+  port: ${EUREKA_PORT}
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
+    region: ap-northeast-2
+
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        exclude: "*"

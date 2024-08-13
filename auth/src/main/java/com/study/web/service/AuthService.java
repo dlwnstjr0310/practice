@@ -78,11 +78,9 @@ public class AuthService {
 				tokenProvider.generateToken(member, REFRESH_TOKEN_EXPIRE_TIME_MILLIS)
 		);
 
-		return new MemberResponseDTO(
+		return MemberResponseDTO.of(
 				accessToken,
-				member.getId(),
-				member.getEmail(),
-				member.getName()
+				member
 		);
 	}
 
@@ -108,11 +106,9 @@ public class AuthService {
 				tokenProvider.generateToken(member, REFRESH_TOKEN_EXPIRE_TIME_MILLIS)
 		);
 
-		return new MemberResponseDTO(
+		return MemberResponseDTO.of(
 				accessToken,
-				member.getId(),
-				member.getEmail(),
-				member.getName()
+				member
 		);
 	}
 
@@ -135,11 +131,9 @@ public class AuthService {
 		Member member = memberRepository.findById(request.id())
 				.orElseThrow(NotFoundMemberException::new);
 
-		return new MemberResponseDTO(
+		return MemberResponseDTO.of(
 				tokenProvider.generateToken(member, ACCESS_TOKEN_EXPIRE_TIME_MILLIS),
-				member.getId(),
-				member.getEmail(),
-				member.getName()
+				member
 		);
 	}
 

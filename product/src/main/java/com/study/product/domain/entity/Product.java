@@ -33,4 +33,11 @@ public class Product extends BaseTimeEntity {
 	@Builder.Default
 	@ColumnDefault("true")
 	Boolean isVisible = true;
+
+	public void modifyForProductField(String name, Integer price, Integer stock, Boolean isVisible) {
+		this.name = name;
+		this.price = price;
+		this.stock = stock;
+		this.isVisible = isVisible;
+	}
 }

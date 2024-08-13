@@ -28,10 +28,11 @@ public class SecurityConfig {
 
 		http
 				.csrf(AbstractHttpConfigurer::disable)
+				.formLogin(AbstractHttpConfigurer::disable)
+				.securityContext(AbstractHttpConfigurer::disable)
 				.sessionManagement(session ->
 						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				)
-				.formLogin(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(request -> request
 						.anyRequest().permitAll()
 				);

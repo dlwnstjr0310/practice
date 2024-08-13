@@ -1,6 +1,6 @@
-package com.study.web.exception;
+package com.study.product.exception;
 
-import com.study.web.model.response.Response;
+import com.study.product.model.response.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,16 +17,16 @@ import java.util.Objects;
 @RestControllerAdvice(basePackages = {"com.study.web.controller"})
 public class CommonExceptionHandler {
 
-	@ExceptionHandler(LoginException.class)
-	public Response<Void> loginExceptionHandler(LoginException e) {
+	@ExceptionHandler(ProductException.class)
+	public Response<Void> loginExceptionHandler(ProductException e) {
 
-		Error authError = e.getError();
+		Error error = e.getError();
 
-		log.warn("login exception info : {} ", e.getMessage());
+		log.warn("product exception info : {} ", e.getMessage());
 
 		return Response.<Void>builder()
-				.code(authError.getCode())
-				.message(authError.getMessage())
+				.code(error.getCode())
+				.message(error.getMessage())
 				.build();
 	}
 
@@ -57,4 +57,5 @@ public class CommonExceptionHandler {
 				.message(Error.INTERNAL_SERVER_ERROR.getMessage())
 				.build();
 	}
+
 }

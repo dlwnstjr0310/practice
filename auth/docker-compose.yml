@@ -1,7 +1,7 @@
 services:
   mysql-db:
     image: mysql:8.0.34
-    container_name: mysql-container
+    container_name: mysql-auth
     ports:
       - "3307:3306"
     env_file:
@@ -36,6 +36,7 @@ services:
 
 volumes:
   mysql-data:
+  redis-data:
 
 networks:
   default:

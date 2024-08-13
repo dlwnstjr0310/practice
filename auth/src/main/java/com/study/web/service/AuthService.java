@@ -4,8 +4,8 @@ import com.study.web.auth.TokenProvider;
 import com.study.web.domain.entity.Member;
 import com.study.web.domain.entity.MemberRole;
 import com.study.web.exception.login.*;
-import com.study.web.model.request.MemberRequest;
-import com.study.web.model.response.MemberResponse;
+import com.study.web.model.request.*;
+import com.study.web.model.response.MemberResponseDTO;
 import com.study.web.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,14 +20,16 @@ public class AuthService {
 
 	private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 60L * 60L * 1000L;
 	private static final long REFRESH_TOKEN_EXPIRE_TIME_MILLIS = 14L * 24L * 60L * 60L * 1000L;
+
+	private final MemberRepository memberRepository;
+
 	private final TokenProvider tokenProvider;
 	private final RedisService redisService;
-	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final MailCertificationService mailService;
 
 	@Transactional
-	public void join(MemberRequest.Join request) {
+	public void join(JoinDTO request) {
 
 		memberRepository.findByEmail(request.email()).ifPresent(member -> {
 			throw new AlreadyExistEmailException();
@@ -51,7 +53,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public MemberResponse.Info verifyMail(MemberRequest.Verify request) {
+	public MemberResponseDTO verifyMail(VerifyDTO request) {
 
 		String text = redisService.getTempCertificationTextInRedis(request.email());
 
@@ -76,16 +78,14 @@ public class AuthService {
 				tokenProvider.generateToken(member, REFRESH_TOKEN_EXPIRE_TIME_MILLIS)
 		);
 
-		return new MemberResponse.Info(
+		return MemberResponseDTO.of(
 				accessToken,
-				member.getId(),
-				member.getEmail(),
-				member.getName()
+				member
 		);
 	}
 
 	@Transactional
-	public MemberResponse.Info login(MemberRequest.Login request) {
+	public MemberResponseDTO login(LoginDTO request) {
 
 		Member member = memberRepository.findByEmail(request.email())
 				.orElseThrow(NotFoundMemberException::new);
@@ -106,16 +106,14 @@ public class AuthService {
 				tokenProvider.generateToken(member, REFRESH_TOKEN_EXPIRE_TIME_MILLIS)
 		);
 
-		return new MemberResponse.Info(
+		return MemberResponseDTO.of(
 				accessToken,
-				member.getId(),
-				member.getEmail(),
-				member.getName()
+				member
 		);
 	}
 
 	@Transactional
-	public void logout(MemberRequest.Logout request) {
+	public void logout(LogoutDTO request) {
 
 		if (request.isAllDevice()) {
 			redisService.deleteTargetInRedis(request.id().toString());
@@ -125,7 +123,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public MemberResponse.Info reissueAccessToken(MemberRequest.ReissueAccessToken request) {
+	public MemberResponseDTO reissueAccessToken(ReissueAccessTokenDTO request) {
 
 		// 여기서도 에러나면 걍 로그인 다시해야함
 		redisService.findRefreshTokenInRedis(request.id().toString(), request.accessToken());
@@ -133,16 +131,14 @@ public class AuthService {
 		Member member = memberRepository.findById(request.id())
 				.orElseThrow(NotFoundMemberException::new);
 
-		return new MemberResponse.Info(
+		return MemberResponseDTO.of(
 				tokenProvider.generateToken(member, ACCESS_TOKEN_EXPIRE_TIME_MILLIS),
-				member.getId(),
-				member.getEmail(),
-				member.getName()
+				member
 		);
 	}
 
 	@Transactional
-	public void modifyPassword(MemberRequest.Login request) {
+	public void modifyPassword(LoginDTO request) {
 
 		memberRepository.findByEmail(request.email())
 				.ifPresentOrElse(member -> {

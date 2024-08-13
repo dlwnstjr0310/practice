@@ -1,10 +1,7 @@
-package com.study.web.config;
+package com.study.product.config;
 
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,26 +14,13 @@ public class SwaggerConfig implements WebMvcConfigurer {
 	@Bean
 	public OpenAPI openAPI() {
 		Info info = new Info()
-				.title("Auth Module")
+				.title("Product Module")
 				.version("V.1.0")
 				.description("API 문서");
 
-		String jwtSchemeName = "JWT AUTH";
-
-		SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtSchemeName);
-
-		Components components = new Components()
-				.addSecuritySchemes(jwtSchemeName, new SecurityScheme()
-						.name(jwtSchemeName)
-						.type(SecurityScheme.Type.HTTP)
-						.scheme("Bearer")
-						.bearerFormat("JWT"));
-
 		return new OpenAPI()
 				.info(info)
-				.components(components)
-				.addServersItem(new Server().url("/"))
-				.addSecurityItem(securityRequirement);
+				.addServersItem(new Server().url("/"));
 	}
 
 
@@ -44,5 +28,4 @@ public class SwaggerConfig implements WebMvcConfigurer {
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addRedirectViewController("/", "/swagger-ui/index.html");
 	}
-
 }

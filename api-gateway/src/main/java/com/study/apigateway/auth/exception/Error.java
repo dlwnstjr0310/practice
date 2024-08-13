@@ -2,9 +2,11 @@ package com.study.apigateway.auth.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @AllArgsConstructor
+@FieldDefaults(makeFinal = true)
 public enum Error {
 
 	EXPIRED_TOKEN(9000, "GateWay : 토큰이 만료되었습니다."),
@@ -13,6 +15,6 @@ public enum Error {
 	PERMISSION_DENIED(9004, "GateWay : 권한이 없습니다."),
 	INTERNAL_SERVER_ERROR(9999, "GateWay : 서버 오류입니다.");
 
-	final Integer code;
-	final String message;
+	Integer code;
+	String message;
 }

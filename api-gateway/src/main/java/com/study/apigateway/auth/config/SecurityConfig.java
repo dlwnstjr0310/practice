@@ -35,7 +35,10 @@ public class SecurityConfig {
 		http.securityContextRepository(NoOpServerSecurityContextRepository.getInstance());
 
 		http.authorizeExchange(request ->
-				request.anyExchange().permitAll()
+				request
+						.pathMatchers("/auth/logout", "/auth/token").authenticated()
+						.pathMatchers("/auth/**").permitAll()
+						.anyExchange().permitAll()
 		);
 
 		return http.build();

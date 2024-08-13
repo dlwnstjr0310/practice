@@ -47,4 +47,11 @@ public interface ProductControllerDocs {
 	})
 	@GetMapping("/product/{id}")
 	Response<ProductResponseDTO> getProductDetail(@PathVariable Long id);
+
+	@Operation(summary = "제품 목록 조회", description = "특정 제품 목록을 조회하는 API 입니다.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Response.class)))
+	})
+	@GetMapping("/list")
+	Response<List<ProductResponseDTO>> getProductList(@RequestBody List<Long> idList);
 }

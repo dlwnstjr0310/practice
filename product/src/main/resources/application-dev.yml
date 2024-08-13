@@ -79,4 +79,3 @@ eureka:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
     region: ap-northeast-2
-    registry-fetch-interval-seconds: 5

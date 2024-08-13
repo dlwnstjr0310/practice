@@ -2,7 +2,6 @@ package com.study.product.exception;
 
 import com.study.product.model.response.Response;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,17 +11,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
 
-@Slf4j
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackages = {"com.study.web.controller"})
+@RestControllerAdvice(basePackages = {"com.study.product"})
 public class CommonExceptionHandler {
 
 	@ExceptionHandler(ProductException.class)
-	public Response<Void> loginExceptionHandler(ProductException e) {
+	public Response<Void> productExceptionHandler(ProductException e) {
 
 		Error error = e.getError();
-
-		log.warn("product exception info : {} ", e.getMessage());
 
 		return Response.<Void>builder()
 				.code(error.getCode())

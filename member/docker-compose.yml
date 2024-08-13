@@ -1,0 +1,26 @@
+services:
+  mysql-db:
+    image: mysql:8.0.34
+    container_name: mysql-member
+    ports:
+      - "3310:3306"
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATASOURCE_PASSWORD}
+      MYSQL_DATABASE: member
+    volumes:
+      - mysql-data-member:/var/lib/mysql-member
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  mysql-data-member:
+
+networks:
+  default:
+    driver: bridge

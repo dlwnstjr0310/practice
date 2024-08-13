@@ -10,7 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${DATASOURCE_PASSWORD}
       MYSQL_DATABASE: auth
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql-data-auth:/var/lib/mysql-auth
     networks:
       - default
     healthcheck:
@@ -35,7 +35,7 @@ services:
       retries: 5
 
 volumes:
-  mysql-data:
+  mysql-data-auth:
   redis-data:
 
 networks:

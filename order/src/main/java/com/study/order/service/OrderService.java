@@ -4,7 +4,6 @@ import com.study.order.client.MemberClient;
 import com.study.order.client.ProductClient;
 import com.study.order.domain.entity.OrderDetail;
 import com.study.order.domain.entity.order.Order;
-import com.study.order.domain.entity.order.Status;
 import com.study.order.exception.member.NotFoundMemberException;
 import com.study.order.exception.order.AlreadyShippingException;
 import com.study.order.exception.order.NotFoundOrderException;
@@ -17,9 +16,9 @@ import com.study.order.model.response.MemberResponseDTO;
 import com.study.order.model.response.OrderResponseDTO;
 import com.study.order.model.response.ProductOrderResponseDTO;
 import com.study.order.model.response.Response;
-import com.study.order.repository.OrderDetailRepository;
 import com.study.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.study.order.domain.entity.order.Status.*;
 import static com.study.order.exception.Error.IS_NOT_SALE_PRODUCT;
 import static com.study.order.exception.Error.NOT_FOUND_MEMBER;
 
@@ -39,7 +39,6 @@ import static com.study.order.exception.Error.NOT_FOUND_MEMBER;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
-	private final OrderDetailRepository orderDetailRepository;
 	private final ProductClient productClient;
 	private final MemberClient memberClient;
 
@@ -105,7 +104,6 @@ public class OrderService {
 		order.setTotalPrice(totalPrice.get());
 
 		orderRepository.save(order);
-		orderDetailRepository.saveAll(orderDetailList);
 	}
 
 	@Transactional(readOnly = true)
@@ -118,29 +116,40 @@ public class OrderService {
 	}
 
 	@Transactional
-	public void modifyOrderStatus(List<Long> orderIdList, String status) {
+	public void modifyOrderStatus(Long id, String status) {
 
 		//todo: 주문 상태 변경 후 재고 복구 이벤트 발행
-		List<Order> orderList = orderRepository.findAllById(orderIdList);
+		Order order = orderRepository.findById(id)
+				.orElseThrow(NotFoundOrderException::new);
 
 		if (status.equalsIgnoreCase("cancel")) {
 			// 부분취소 안된다는 가정하에 진행
-			for (Order order : orderList) {
-				if (order.getStatus().equals(Status.ORDER_COMPLETED)) {
-					order.setStatus(Status.CANCELED);
-				} else {
-					throw new AlreadyShippingException();
-				}
+			if (order.getStatus().equals(ORDER_COMPLETED)) {
+				order.setStatus(CANCELED);
+
+				order.getOrderDetailList().forEach(orderDetail -> orderDetail.setIsDelete(true));
+			} else {
+				throw new AlreadyShippingException();
 			}
 		} else if (status.equalsIgnoreCase("return")) {
-			for (Order order : orderList) {
-				if (order.getStatus().equals(Status.SHIPPING_COMPLETED)) {
-					order.setStatus(Status.RETURN_PENDING);
-				} else {
-					throw new ReturnPeriodPassedException();
-				}
+
+			if (order.getStatus().equals(SHIPPING_COMPLETED)) {
+				order.setStatus(RETURN_PENDING);
+
+				order.getOrderDetailList().forEach(orderDetail -> orderDetail.setIsDelete(true));
+			} else {
+				throw new ReturnPeriodPassedException();
 			}
 		}
+
+		orderRepository.save(order);
 	}
 
+	@Transactional
+	@Scheduled(cron = "0 0 0 * * *")
+	public void updateOrderStatus() {
+
+		//todo: 나중에 주문 시간 업데이트하기. 근데 이걸로할지 batch 같은걸로 할지 못정함;
+
+	}
 }

@@ -2,11 +2,13 @@ package com.study.product.controller;
 
 import com.study.product.controller.docs.ProductControllerDocs;
 import com.study.product.model.request.ProductRequestDTO;
+import com.study.product.model.request.SearchConditionDTO;
 import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.model.response.Response;
 import com.study.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,12 +37,12 @@ public class ProductController implements ProductControllerDocs {
 				.build();
 	}
 
-	//todo: 추후 페이징, 검색도 추가하기
 	@GetMapping
-	public Response<List<ProductResponseDTO>> getCurrentSaleProductList() {
+	public Response<List<ProductResponseDTO>> getCurrentSaleProductList(Pageable pageable,
+	                                                                    SearchConditionDTO searchCondition) {
 
 		return Response.<List<ProductResponseDTO>>builder()
-				.data(productService.getCurrentSaleProductList())
+				.data(productService.getCurrentSaleProductList(pageable, searchCondition))
 				.build();
 	}
 

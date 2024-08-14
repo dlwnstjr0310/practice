@@ -1,26 +1,11 @@
 package com.study.member.model.response;
 
-import com.study.member.domain.entity.member.Member;
-
 import java.util.List;
 
 public record MemberResponseDTO(
 
-		Long id,
+		List<OrderResponseDTO> orderList,
 
-		String name,
-
-		String email,
-
-		List<AddressResponseDTO> addressList
+		List<WishListResponseDTO> wishList
 ) {
-
-	public static MemberResponseDTO of(Member member) {
-		return new MemberResponseDTO(
-				member.getId(),
-				member.getName(),
-				member.getEmail(),
-				AddressResponseDTO.of(member.getAddressList())
-		);
-	}
 }

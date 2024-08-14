@@ -10,13 +10,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@DynamicUpdate
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -34,6 +32,9 @@ public class Product extends BaseTimeEntity {
 
 	@NotNull
 	Integer stock;
+
+	@NotNull
+	Category category;
 
 	@Builder.Default
 	@ColumnDefault("true")

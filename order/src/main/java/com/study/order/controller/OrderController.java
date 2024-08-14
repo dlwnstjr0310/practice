@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/order")
@@ -45,10 +43,10 @@ public class OrderController {
 				.build();
 	}
 
-	@PatchMapping
-	public Response<Void> modifyOrderStatus(@Valid @RequestBody List<Long> orderIdList, @RequestParam String status) {
+	@PatchMapping("/{id}")
+	public Response<Void> modifyOrderStatus(@PathVariable Long id, @RequestParam String status) {
 
-		orderService.modifyOrderStatus(orderIdList, status);
+		orderService.modifyOrderStatus(id, status);
 		return Response.<Void>builder()
 				.build();
 	}

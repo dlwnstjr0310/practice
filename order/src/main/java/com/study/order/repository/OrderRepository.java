@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	@Override
-	@EntityGraph(attributePaths = "detailList")
+	@EntityGraph(attributePaths = "orderDetailList")
 	Optional<Order> findById(Long id);
 }

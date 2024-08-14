@@ -12,8 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Tag(name = "Order", description = "상품 구매, 주문내역 조회,수정 등의 사용자 API")
 public interface OrderControllerDocs {
 
@@ -41,7 +39,7 @@ public interface OrderControllerDocs {
 					""", content = @Content(schema = @Schema(implementation = Response.class))),
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 주문입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
-	@PatchMapping("/order")
-	Response<Void> modifyOrder(@Valid @RequestBody List<Long> orderIdList, @RequestParam String status);
+	@PatchMapping("/order/{id}")
+	Response<Void> modifyOrderStatus(@Valid @PathVariable Long id, @RequestParam String status);
 
 }

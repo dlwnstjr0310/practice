@@ -1,24 +1,25 @@
 package com.study.order.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
 public record OrderRequestDTO(
 
-		@NotBlank
+		@NotNull
 		Long memberId,
 
 		@NotBlank
 		String destinationAddress,
 
-		@NotBlank
+		@NotNull
 		Boolean isDefault,
 
-		@NotBlank
+		@NotNull
 		Boolean isStoreInAddress,
-		
-		@NotBlank
-		List<Long> productIdList
+
+		@NotNull
+		List<ProductOrderRequestDTO> productList
 ) {
 }

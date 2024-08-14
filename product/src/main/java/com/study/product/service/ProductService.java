@@ -66,18 +66,4 @@ public class ProductService {
 
 		return ProductResponseDTO.of(product);
 	}
-
-	@Transactional
-	public List<ProductResponseDTO> getProductList(List<Long> idList) {
-
-		//todo: 여기 대체 왜 post 로 쳐들어오는지 이해가안됨; 무조건밝혀내
-		System.out.println("상품목록 가져ㅑ오기 실행 : " + idList);
-		return productRepository.findAllById(idList).stream()
-				.map(product -> {
-					if (!product.getIsVisible()) {
-						throw new IsNotSaleProductException();
-					}
-					return ProductResponseDTO.of(product);
-				}).toList();
-	}
 }

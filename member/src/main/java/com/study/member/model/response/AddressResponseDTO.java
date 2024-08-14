@@ -3,7 +3,6 @@ package com.study.member.model.response;
 import com.study.member.domain.entity.Address;
 
 import java.util.List;
-import java.util.Set;
 
 public record AddressResponseDTO(
 
@@ -19,7 +18,7 @@ public record AddressResponseDTO(
 
 		Boolean isDefault
 ) {
-	public static List<AddressResponseDTO> of(Set<Address> addressList) {
+	public static List<AddressResponseDTO> of(List<Address> addressList) {
 		return addressList.stream().map(AddressResponseDTO::of).toList();
 	}
 

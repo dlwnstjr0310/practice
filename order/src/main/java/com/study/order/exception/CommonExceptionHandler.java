@@ -26,6 +26,28 @@ public class CommonExceptionHandler {
 				.build();
 	}
 
+	@ExceptionHandler(ProductException.class)
+	public Response<Void> productExceptionHandler(ProductException e) {
+
+		Error error = e.getError();
+
+		return Response.<Void>builder()
+				.code(error.getCode())
+				.message(error.getMessage())
+				.build();
+	}
+
+	@ExceptionHandler(MemberException.class)
+	public Response<Void> MemberExceptionHandler(MemberException e) {
+
+		Error error = e.getError();
+
+		return Response.<Void>builder()
+				.code(error.getCode())
+				.message(error.getMessage())
+				.build();
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public Response<Void> validExceptionHandler(MethodArgumentNotValidException e) {
@@ -48,6 +70,7 @@ public class CommonExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public Response<Void> exceptionHandler(Exception e) {
+		e.printStackTrace();
 		return Response.<Void>builder()
 				.code(Error.INTERNAL_SERVER_ERROR.getCode())
 				.message(Error.INTERNAL_SERVER_ERROR.getMessage())

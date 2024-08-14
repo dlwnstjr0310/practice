@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 public enum Error {
 
 	NOT_FOUND_MEMBER(1000, "존재하지 않는 사용자입니다."),
+	
 	INTERNAL_SERVER_ERROR(9999, "서버 오류입니다.");
 
 	Integer code;

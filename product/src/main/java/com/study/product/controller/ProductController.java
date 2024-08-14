@@ -51,12 +51,4 @@ public class ProductController implements ProductControllerDocs {
 				.data(productService.getProductDetail(id))
 				.build();
 	}
-
-	@GetMapping("/list")
-	public Response<List<ProductResponseDTO>> getProductList(@RequestBody List<Long> idList) {
-
-		return Response.<List<ProductResponseDTO>>builder()
-				.data(productService.getProductList(idList))
-				.build();
-	}
 }

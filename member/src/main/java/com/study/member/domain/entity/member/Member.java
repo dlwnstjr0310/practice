@@ -11,8 +11,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -53,6 +52,6 @@ public class Member extends BaseTimeEntity {
 
 	@JoinColumn(name = "member_id")
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	Set<Address> addressList = new LinkedHashSet<>();
+	List<Address> addressList;
 
 }

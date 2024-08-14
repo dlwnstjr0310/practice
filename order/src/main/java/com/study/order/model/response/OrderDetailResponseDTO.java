@@ -1,21 +1,24 @@
 package com.study.order.model.response;
 
 import com.study.order.domain.entity.OrderDetail;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
-import java.util.Set;
 
 public record OrderDetailResponseDTO(
 
+		@NotNull
 		Long productId,
 
+		@NotNull
 		Integer quantity,
 
+		@NotNull
 		Integer price
 
 ) {
 
-	public static List<OrderDetailResponseDTO> of(Set<OrderDetail> detailList) {
+	public static List<OrderDetailResponseDTO> of(List<OrderDetail> detailList) {
 
 		return detailList.stream()
 				.map(OrderDetailResponseDTO::of)

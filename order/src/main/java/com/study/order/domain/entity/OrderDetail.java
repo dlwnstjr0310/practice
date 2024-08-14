@@ -1,11 +1,9 @@
 package com.study.order.domain.entity;
 
 import com.study.order.domain.common.BaseTimeEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
+import com.study.order.domain.entity.order.Order;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
@@ -14,9 +12,9 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Builder
-@NotBlank
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderDetail extends BaseTimeEntity {
 
@@ -24,14 +22,20 @@ public class OrderDetail extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@NotNull
 	Long productId;
 
+	@NotNull
 	Integer quantity;
 
+	@NotNull
 	Integer price;
 
 	@Builder.Default
 	@ColumnDefault("false")
 	Boolean isDelete = false;
 
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	Order order;
 }

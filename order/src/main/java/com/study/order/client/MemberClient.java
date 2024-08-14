@@ -1,6 +1,7 @@
 package com.study.order.client;
 
 import com.study.order.model.response.MemberResponseDTO;
+import com.study.order.model.response.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,5 +10,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface MemberClient {
 
 	@GetMapping("/member/{id}")
-	MemberResponseDTO getMemberInfo(@PathVariable Long id);
+	Response<MemberResponseDTO> getMemberInfo(@PathVariable Long id);
 }

@@ -1,15 +1,16 @@
 package com.study.order.domain.entity.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.study.order.domain.common.BaseTimeEntity;
 import com.study.order.domain.entity.OrderDetail;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static com.study.order.domain.entity.order.Status.ORDER_COMPLETED;
 
@@ -17,7 +18,6 @@ import static com.study.order.domain.entity.order.Status.ORDER_COMPLETED;
 @Getter
 @Setter
 @Builder
-@NotBlank
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -27,10 +27,13 @@ public class Order extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@NotNull
 	Long memberId;
 
+	@NotNull
 	Integer totalPrice;
 
+	@NotBlank
 	String destinationAddress;
 
 	@Builder.Default
@@ -41,8 +44,8 @@ public class Order extends BaseTimeEntity {
 	@ColumnDefault("false")
 	Boolean isDelete = false;
 
-	@JoinColumn(name = "order_id")
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	Set<OrderDetail> detailList = new LinkedHashSet<>();
+	@JsonIgnore
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	List<OrderDetail> orderDetailList;
 
 }

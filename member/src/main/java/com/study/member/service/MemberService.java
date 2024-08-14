@@ -1,6 +1,5 @@
 package com.study.member.service;
 
-import com.study.member.domain.entity.member.Member;
 import com.study.member.exception.member.NotFoundMemberException;
 import com.study.member.model.response.MemberResponseDTO;
 import com.study.member.repository.AddressRepository;
@@ -19,10 +18,9 @@ public class MemberService {
 	@Transactional
 	public MemberResponseDTO getMemberInfo(Long id) {
 
-		Member member = memberRepository.findById(id)
-				.orElseThrow(NotFoundMemberException::new);
 		return MemberResponseDTO.of(
-				member
+				memberRepository.findById(id)
+						.orElseThrow(NotFoundMemberException::new)
 		);
 	}
 }

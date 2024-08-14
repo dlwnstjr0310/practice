@@ -82,6 +82,7 @@ eureka:
 
 ---
 
-product:
-  service:
-    url: ${PRODUCT_SERVICE_URL}
+service:
+  url:
+    order: ${ORDER_SERVICE_URL}
+    product: ${PRODUCT_SERVICE_URL}

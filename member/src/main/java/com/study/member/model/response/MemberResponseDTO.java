@@ -8,4 +8,8 @@ public record MemberResponseDTO(
 
 		List<WishListResponseDTO> wishList
 ) {
+	public static MemberResponseDTO of(List<OrderResponseDTO> orderList,
+	                                   List<WishListResponseDTO> wishList) {
+		return new MemberResponseDTO(orderList, wishList);
+	}
 }

@@ -6,7 +6,6 @@ import com.study.order.domain.entity.OrderDetail;
 import com.study.order.domain.entity.order.Order;
 import com.study.order.exception.member.NotFoundMemberException;
 import com.study.order.exception.order.AlreadyShippingException;
-import com.study.order.exception.order.NotFoundOrderException;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.exception.order.ReturnPeriodPassedException;
 import com.study.order.exception.product.IsNotSaleProductException;
@@ -16,6 +15,7 @@ import com.study.order.model.response.MemberResponseDTO;
 import com.study.order.model.response.OrderResponseDTO;
 import com.study.order.model.response.ProductOrderResponseDTO;
 import com.study.order.model.response.Response;
+import com.study.order.repository.OrderDetailRepository;
 import com.study.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -39,15 +39,16 @@ import static com.study.order.exception.Error.NOT_FOUND_MEMBER;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
+	private final OrderDetailRepository orderDetailRepository;
 	private final ProductClient productClient;
 	private final MemberClient memberClient;
 
+	//todo: feignClient -> TransactionEventListener -> kafka
 	@Transactional
 	public void createOrder(OrderRequestDTO request) {
 
-		//todo: 배송지목록에 추가여부 확인
+		//todo: 배송지목록에 추가여부 확인,request 에 isDefault 면 member 업데이트 이벤트 발행
 		if (request.isDefault()) {
-			//todo: request 에 isDefault 면 member 업데이트 이벤트 발행
 		}
 
 		Response<MemberResponseDTO> memberInfo = memberClient.getMemberInfo(request.memberId());
@@ -104,14 +105,18 @@ public class OrderService {
 		order.setTotalPrice(totalPrice.get());
 
 		orderRepository.save(order);
+		orderDetailRepository.saveAll(orderDetailList);
 	}
 
 	@Transactional(readOnly = true)
 	public OrderResponseDTO getOrderList(Long id) {
 
+		List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(id);
+		Order order = orderDetailList.get(0).getOrder();
+
 		return OrderResponseDTO.of(
-				orderRepository.findById(id)
-						.orElseThrow(NotFoundOrderException::new)
+				order,
+				orderDetailList
 		);
 	}
 
@@ -119,15 +124,15 @@ public class OrderService {
 	public void modifyOrderStatus(Long id, String status) {
 
 		//todo: 주문 상태 변경 후 재고 복구 이벤트 발행
-		Order order = orderRepository.findById(id)
-				.orElseThrow(NotFoundOrderException::new);
+		List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(id);
+		Order order = orderDetailList.get(0).getOrder();
 
 		if (status.equalsIgnoreCase("cancel")) {
 			// 부분취소 안된다는 가정하에 진행
 			if (order.getStatus().equals(ORDER_COMPLETED)) {
 				order.setStatus(CANCELED);
 
-				order.getOrderDetailList().forEach(orderDetail -> orderDetail.setIsDelete(true));
+				orderDetailList.forEach(orderDetail -> orderDetail.setIsDelete(true));
 			} else {
 				throw new AlreadyShippingException();
 			}
@@ -136,13 +141,14 @@ public class OrderService {
 			if (order.getStatus().equals(SHIPPING_COMPLETED)) {
 				order.setStatus(RETURN_PENDING);
 
-				order.getOrderDetailList().forEach(orderDetail -> orderDetail.setIsDelete(true));
+				orderDetailList.forEach(orderDetail -> orderDetail.setIsDelete(true));
 			} else {
 				throw new ReturnPeriodPassedException();
 			}
 		}
 
 		orderRepository.save(order);
+		orderDetailRepository.saveAll(orderDetailList);
 	}
 
 	@Transactional

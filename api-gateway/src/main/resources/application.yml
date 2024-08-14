@@ -31,6 +31,18 @@ spring:
             - Path=${SECOND_PATH}
           filters:
             - GatewayHeaderFilter
+        - id: ${THIRD_ID}
+          uri: lb://${THIRD_URI}
+          predicates:
+            - Path=${THIRD_PATH}
+          filters:
+            - GatewayHeaderFilter
+        - id: ${FOURTH_ID}
+          uri: lb://${FOURTH_URI}
+          predicates:
+            - Path=${FOURTH_PATH}
+          filters:
+            - GatewayHeaderFilter
 
 logging:
   level:

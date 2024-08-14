@@ -2,7 +2,6 @@ package com.study.web.exception;
 
 import com.study.web.model.response.Response;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,17 +11,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Objects;
 
-@Slf4j
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackages = {"com.study.web.controller"})
+@RestControllerAdvice(basePackages = {"com.study.auth"})
 public class CommonExceptionHandler {
 
 	@ExceptionHandler(LoginException.class)
 	public Response<Void> loginExceptionHandler(LoginException e) {
 
 		Error authError = e.getError();
-
-		log.warn("login exception info : {} ", e.getMessage());
 
 		return Response.<Void>builder()
 				.code(authError.getCode())

@@ -1,0 +1,26 @@
+services:
+  mysql-db:
+    image: mysql:8.0.34
+    container_name: mysql-order
+    ports:
+      - "3309:3306"
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATASOURCE_PASSWORD}
+      MYSQL_DATABASE: order
+    volumes:
+      - mysql-data-order:/var/lib/mysql-order
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  mysql-data-order:
+
+networks:
+  default:
+    driver: bridge

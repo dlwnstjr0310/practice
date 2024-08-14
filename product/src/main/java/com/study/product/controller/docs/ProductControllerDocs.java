@@ -22,7 +22,7 @@ public interface ProductControllerDocs {
 			@ApiResponse(responseCode = "201", description = "등록 성공", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/product")
-	Response<Long> createProduct(ProductRequestDTO request);
+	Response<Long> createProduct(@Valid @RequestBody ProductRequestDTO request);
 
 	@Operation(summary = "제품 수정", description = "기존 제품을 수정하는 API 입니다.")
 	@ApiResponses(value = {
@@ -47,4 +47,5 @@ public interface ProductControllerDocs {
 	})
 	@GetMapping("/product/{id}")
 	Response<ProductResponseDTO> getProductDetail(@PathVariable Long id);
+
 }

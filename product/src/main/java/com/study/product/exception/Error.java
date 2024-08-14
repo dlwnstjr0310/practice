@@ -11,6 +11,9 @@ public enum Error {
 
 	NOT_FOUND_PRODUCT(2000, "해당 상품을 찾을 수 없습니다."),
 	IS_NOT_SALE_PRODUCT(2001, "판매 중인 상품이 아닙니다."),
+
+	OUT_OF_STOCK(3001, "재고가 부족합니다."),
+
 	INTERNAL_SERVER_ERROR(9999, "서버 오류입니다.");
 
 	Integer code;

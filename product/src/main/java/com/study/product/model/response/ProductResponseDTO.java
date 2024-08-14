@@ -4,8 +4,6 @@ import com.study.product.domain.entity.Product;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
-
 public record ProductResponseDTO(
 
 		@NotNull
@@ -23,10 +21,6 @@ public record ProductResponseDTO(
 		@NotNull
 		Boolean isVisible
 ) {
-
-	public static List<ProductResponseDTO> of(List<Product> productList) {
-		return productList.stream().map(ProductResponseDTO::of).toList();
-	}
 
 	public static ProductResponseDTO of(Product product) {
 		return new ProductResponseDTO(

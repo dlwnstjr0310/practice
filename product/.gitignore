@@ -37,3 +37,4 @@ out/
 .vscode/
 /src/main/resources/application-key.yml
 /.env
+/src/main/generated/

@@ -1,6 +1,7 @@
 package com.study.product.controller.docs;
 
 import com.study.product.model.request.ProductRequestDTO;
+import com.study.product.model.request.SearchConditionDTO;
 import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.model.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +39,10 @@ public interface ProductControllerDocs {
 			@ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@GetMapping("/product")
-	Response<List<ProductResponseDTO>> getCurrentSaleProductList();
+	Response<List<ProductResponseDTO>> getCurrentSaleProductList(
+			Pageable pageable,
+			SearchConditionDTO searchCondition
+	);
 
 	@Operation(summary = "제품 상세 조회", description = "특정 제품의 상세 정보를 조회하는 API 입니다.")
 	@ApiResponses(value = {

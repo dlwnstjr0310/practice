@@ -2,6 +2,7 @@ package com.study.product.controller.docs;
 
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
+import com.study.product.model.response.ProductPaginationResponseDTO;
 import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.model.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,8 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Product", description = "제품 등록,수정 및 조회 등의 사용자 API")
 public interface ProductControllerDocs {
@@ -39,7 +38,7 @@ public interface ProductControllerDocs {
 			@ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@GetMapping("/product")
-	Response<List<ProductResponseDTO>> getCurrentSaleProductList(
+	Response<ProductPaginationResponseDTO> getCurrentSaleProductList(
 			Pageable pageable,
 			SearchConditionDTO searchCondition
 	);

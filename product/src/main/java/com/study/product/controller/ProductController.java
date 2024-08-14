@@ -3,6 +3,7 @@ package com.study.product.controller;
 import com.study.product.controller.docs.ProductControllerDocs;
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
+import com.study.product.model.response.ProductPaginationResponseDTO;
 import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.model.response.Response;
 import com.study.product.service.ProductService;
@@ -10,8 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,10 +37,10 @@ public class ProductController implements ProductControllerDocs {
 	}
 
 	@GetMapping
-	public Response<List<ProductResponseDTO>> getCurrentSaleProductList(Pageable pageable,
-	                                                                    SearchConditionDTO searchCondition) {
+	public Response<ProductPaginationResponseDTO> getCurrentSaleProductList(Pageable pageable,
+	                                                                        SearchConditionDTO searchCondition) {
 
-		return Response.<List<ProductResponseDTO>>builder()
+		return Response.<ProductPaginationResponseDTO>builder()
 				.data(productService.getCurrentSaleProductList(pageable, searchCondition))
 				.build();
 	}

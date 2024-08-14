@@ -5,6 +5,7 @@ import com.study.product.exception.product.IsNotSaleProductException;
 import com.study.product.exception.product.NotFoundProductException;
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
+import com.study.product.model.response.ProductPaginationResponseDTO;
 import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,9 +52,13 @@ public class ProductService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProductResponseDTO> getCurrentSaleProductList(Pageable pageable, SearchConditionDTO searchCondition) {
+	public ProductPaginationResponseDTO getCurrentSaleProductList(Pageable pageable, SearchConditionDTO searchCondition) {
 
-		return productRepository.search(pageable, searchCondition);
+		List<ProductResponseDTO> search = productRepository.search(pageable, searchCondition);
+		return ProductPaginationResponseDTO.of(
+				search.size(),
+				search
+		);
 	}
 
 	@Transactional(readOnly = true)

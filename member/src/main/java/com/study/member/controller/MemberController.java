@@ -2,7 +2,7 @@ package com.study.member.controller;
 
 import com.study.member.model.request.AddressRequestDTO;
 import com.study.member.model.request.WishListRequestDTO;
-import com.study.member.model.response.MemberResponseDTO;
+import com.study.member.model.response.member.MemberResponseDTO;
 import com.study.member.model.response.Response;
 import com.study.member.service.MemberService;
 import jakarta.validation.Valid;

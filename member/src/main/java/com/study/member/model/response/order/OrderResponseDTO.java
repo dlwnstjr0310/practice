@@ -1,4 +1,4 @@
-package com.study.member.model.response;
+package com.study.member.model.response.order;
 
 import java.util.List;
 

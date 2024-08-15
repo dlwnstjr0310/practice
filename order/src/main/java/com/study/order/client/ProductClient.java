@@ -1,7 +1,7 @@
 package com.study.order.client;
 
 import com.study.order.model.request.ProductOrderRequestDTO;
-import com.study.order.model.response.ProductOrderResponseDTO;
+import com.study.order.model.response.order.ProductOrderResponseDTO;
 import com.study.order.model.response.Response;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;

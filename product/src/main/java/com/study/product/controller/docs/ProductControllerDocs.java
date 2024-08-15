@@ -2,8 +2,8 @@ package com.study.product.controller.docs;
 
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
-import com.study.product.model.response.ProductPaginationResponseDTO;
 import com.study.product.model.response.ProductResponseDTO;
+import com.study.product.model.response.ProductSearchResultDTO;
 import com.study.product.model.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,7 +38,7 @@ public interface ProductControllerDocs {
 			@ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@GetMapping("/product")
-	Response<ProductPaginationResponseDTO> getCurrentSaleProductList(
+	Response<ProductSearchResultDTO> getCurrentSaleProductList(
 			Pageable pageable,
 			SearchConditionDTO searchCondition
 	);

@@ -1,4 +1,6 @@
-package com.study.member.model.response;
+package com.study.member.model.response.member;
+
+import com.study.member.model.response.order.OrderResponseDTO;
 
 import java.util.List;
 

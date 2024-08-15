@@ -1,6 +1,6 @@
 package com.study.member.client;
 
-import com.study.member.model.response.ProductResponseDTO;
+import com.study.member.model.response.product.ProductResponseDTO;
 import com.study.member.model.response.Response;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,6 @@
 package com.study.member.controller.docs;
 
-import com.study.member.model.response.MemberInfoResponseDTO;
+import com.study.member.model.response.member.MemberInfoResponseDTO;
 import com.study.member.model.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

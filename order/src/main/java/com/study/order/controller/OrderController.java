@@ -1,7 +1,7 @@
 package com.study.order.controller;
 
 import com.study.order.model.request.OrderRequestDTO;
-import com.study.order.model.response.OrderResponseDTO;
+import com.study.order.model.response.order.OrderResponseDTO;
 import com.study.order.model.response.Response;
 import com.study.order.service.OrderService;
 import jakarta.validation.Valid;

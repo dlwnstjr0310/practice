@@ -1,4 +1,4 @@
-package com.study.order.model.response;
+package com.study.order.model.response.order;
 
 import com.study.order.domain.entity.OrderDetail;
 import jakarta.validation.constraints.NotNull;

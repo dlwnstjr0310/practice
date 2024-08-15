@@ -1,7 +1,7 @@
 package com.study.order.repository.custom.impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.study.order.model.response.OrderResponseDTO;
+import com.study.order.model.response.order.OrderResponseDTO;
 import com.study.order.repository.custom.OrderDetailRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 

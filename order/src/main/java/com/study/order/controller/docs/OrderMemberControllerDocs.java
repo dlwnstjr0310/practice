@@ -1,6 +1,6 @@
 package com.study.order.controller.docs;
 
-import com.study.order.model.response.OrderResponseDTO;
+import com.study.order.model.response.order.OrderResponseDTO;
 import com.study.order.model.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

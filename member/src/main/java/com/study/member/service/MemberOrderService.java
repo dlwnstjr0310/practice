@@ -1,7 +1,7 @@
 package com.study.member.service;
 
 import com.study.member.exception.member.NotFoundMemberException;
-import com.study.member.model.response.MemberInfoResponseDTO;
+import com.study.member.model.response.member.MemberInfoResponseDTO;
 import com.study.member.repository.AddressRepository;
 import com.study.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

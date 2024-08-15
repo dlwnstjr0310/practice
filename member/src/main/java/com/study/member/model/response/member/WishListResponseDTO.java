@@ -1,4 +1,4 @@
-package com.study.member.model.response;
+package com.study.member.model.response.member;
 
 import com.study.member.domain.entity.WishList;
 

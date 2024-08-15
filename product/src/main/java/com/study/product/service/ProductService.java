@@ -5,8 +5,8 @@ import com.study.product.exception.product.IsNotSaleProductException;
 import com.study.product.exception.product.NotFoundProductException;
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
-import com.study.product.model.response.ProductPaginationResponseDTO;
 import com.study.product.model.response.ProductResponseDTO;
+import com.study.product.model.response.ProductSearchResultDTO;
 import com.study.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -46,10 +46,10 @@ public class ProductService {
 	}
 
 	@Transactional(readOnly = true)
-	public ProductPaginationResponseDTO getCurrentSaleProductList(Pageable pageable, SearchConditionDTO searchCondition) {
+	public ProductSearchResultDTO getCurrentSaleProductList(Pageable pageable, SearchConditionDTO searchCondition) {
 
 		List<ProductResponseDTO> search = productRepository.search(pageable, searchCondition);
-		return ProductPaginationResponseDTO.of(
+		return ProductSearchResultDTO.of(
 				search.size(),
 				search
 		);

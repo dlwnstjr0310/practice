@@ -1,6 +1,6 @@
 package com.study.order.repository.custom;
 
-import com.study.order.model.response.OrderResponseDTO;
+import com.study.order.model.response.order.OrderResponseDTO;
 
 import java.util.List;
 

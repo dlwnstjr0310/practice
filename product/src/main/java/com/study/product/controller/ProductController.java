@@ -3,8 +3,8 @@ package com.study.product.controller;
 import com.study.product.controller.docs.ProductControllerDocs;
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
-import com.study.product.model.response.ProductPaginationResponseDTO;
 import com.study.product.model.response.ProductResponseDTO;
+import com.study.product.model.response.ProductSearchResultDTO;
 import com.study.product.model.response.Response;
 import com.study.product.service.ProductService;
 import jakarta.validation.Valid;
@@ -37,10 +37,10 @@ public class ProductController implements ProductControllerDocs {
 	}
 
 	@GetMapping
-	public Response<ProductPaginationResponseDTO> getCurrentSaleProductList(Pageable pageable,
-	                                                                        SearchConditionDTO searchCondition) {
+	public Response<ProductSearchResultDTO> getCurrentSaleProductList(Pageable pageable,
+	                                                                  SearchConditionDTO searchCondition) {
 
-		return Response.<ProductPaginationResponseDTO>builder()
+		return Response.<ProductSearchResultDTO>builder()
 				.data(productService.getCurrentSaleProductList(pageable, searchCondition))
 				.build();
 	}

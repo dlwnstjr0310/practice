@@ -1,4 +1,4 @@
-package com.study.order.model.response;
+package com.study.order.model.response.member;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

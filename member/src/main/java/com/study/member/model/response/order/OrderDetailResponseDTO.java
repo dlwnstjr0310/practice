@@ -1,4 +1,4 @@
-package com.study.member.model.response;
+package com.study.member.model.response.order;
 
 public record OrderDetailResponseDTO(
 

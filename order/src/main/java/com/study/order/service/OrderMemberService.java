@@ -1,6 +1,6 @@
 package com.study.order.service;
 
-import com.study.order.model.response.OrderResponseDTO;
+import com.study.order.model.response.order.OrderResponseDTO;
 import com.study.order.repository.OrderDetailRepository;
 import com.study.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;

@@ -26,15 +26,6 @@ public class OrderController {
 				.build();
 	}
 
-	//todo: 나중에 Member에서 mypage 에서 호출하기
-//	@GetMapping
-//	public Response<OrderResponseDTO> getOrderInfo() {
-//
-//		return Response.<OrderResponseDTO>builder()
-//				.build();
-//	}
-
-	//todo: 아마.. 여기는 기간설정이나 페이징을 해야할듯
 	@GetMapping("/{id}")
 	public Response<OrderResponseDTO> getOrderList(@PathVariable Long id) {
 

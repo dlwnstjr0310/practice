@@ -20,7 +20,9 @@ public class MemberOrderService {
 
 		return MemberInfoResponseDTO.of(
 				memberRepository.findById(id)
-						.orElseThrow(NotFoundMemberException::new)
+						.orElseThrow(NotFoundMemberException::new),
+				addressRepository.findByMemberId(id)
 		);
 	}
+
 }

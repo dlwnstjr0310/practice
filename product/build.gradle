@@ -71,15 +71,8 @@ dependencyManagement {
     }
 }
 
-def querydslSrcDir = 'src/main/generated'
-
 clean {
-    delete file(querydslSrcDir)
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.annotationProcessorPath = configurations.annotationProcessor
-    options.generatedSourceOutputDirectory = file(querydslSrcDir)
+    delete file('src/main/generated')
 }
 
 tasks.named('test') {

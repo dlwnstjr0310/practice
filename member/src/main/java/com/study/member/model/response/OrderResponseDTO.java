@@ -14,6 +14,5 @@ public record OrderResponseDTO(
 
 		List<OrderDetailResponseDTO> orderDetailList
 
-
 ) {
 }

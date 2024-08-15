@@ -32,4 +32,7 @@ public class WishList {
 	@JoinColumn(name = "member_id")
 	Member member;
 
+	public void modifyForWishListQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 }

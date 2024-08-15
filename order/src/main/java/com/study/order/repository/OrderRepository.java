@@ -1,14 +1,11 @@
 package com.study.order.repository;
 
 import com.study.order.domain.entity.order.Order;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-	@Override
-	@EntityGraph(attributePaths = "orderDetailList")
-	Optional<Order> findById(Long id);
+	List<Order> findAllByMemberId(Long memberId);
 }

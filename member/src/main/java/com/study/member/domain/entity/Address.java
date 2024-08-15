@@ -14,7 +14,6 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Builder
-@NotBlank
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,10 +27,13 @@ public class Address extends BaseTimeEntity {
 	@ColumnDefault("'기본 배송지'")
 	String name = "기본 배송지";
 
+	@NotBlank
 	String address;
 
+	@NotBlank
 	String zipCode;
 
+	@NotBlank
 	@Pattern(regexp = CommonConstant.RegExp.PHONE)
 	String phone;
 

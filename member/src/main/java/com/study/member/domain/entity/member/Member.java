@@ -1,18 +1,13 @@
 package com.study.member.domain.entity.member;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.study.member.domain.common.BaseTimeEntity;
 import com.study.member.domain.common.CommonConstant;
-import com.study.member.domain.entity.Address;
-import com.study.member.domain.entity.WishList;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -49,13 +44,5 @@ public class Member extends BaseTimeEntity {
 	@Builder.Default
 	@ColumnDefault("true")
 	Boolean isLocked = true;
-
-	@JsonIgnore
-	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-	List<Address> addressList;
-
-	@JsonIgnore
-	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-	List<WishList> wistList;
 
 }

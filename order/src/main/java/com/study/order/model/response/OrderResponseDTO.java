@@ -1,5 +1,6 @@
 package com.study.order.model.response;
 
+import com.study.order.domain.entity.OrderDetail;
 import com.study.order.domain.entity.order.Order;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,13 +26,13 @@ public record OrderResponseDTO(
 
 ) {
 
-	public static OrderResponseDTO of(Order order) {
+	public static OrderResponseDTO of(Order order, List<OrderDetail> orderDetailList) {
 		return new OrderResponseDTO(
 				order.getId(),
 				order.getTotalPrice(),
 				order.getDestinationAddress(),
 				order.getStatus().name(),
-				OrderDetailResponseDTO.of(order.getOrderDetailList())
+				OrderDetailResponseDTO.of(orderDetailList)
 		);
 	}
 }

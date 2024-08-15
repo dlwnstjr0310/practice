@@ -3,19 +3,21 @@ package com.study.member.model.response;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record OrderMemberResponseDTO(
+public record ProductResponseDTO(
 
 		@NotNull
 		Long id,
 
+		@NotBlank
+		String name,
+
 		@NotNull
-		Integer totalPrice,
+		Integer price,
 
-		@NotBlank
-		String destinationAddress,
+		@NotNull
+		Integer stock,
 
-		@NotBlank
-		String status
-
+		@NotNull
+		Boolean isVisible
 ) {
 }

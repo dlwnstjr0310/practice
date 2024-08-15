@@ -28,7 +28,7 @@ public class ProductService {
 	}
 
 	@Transactional
-	public ProductResponseDTO modifyProduct(Long id, ProductRequestDTO request) {
+	public Long modifyProduct(Long id, ProductRequestDTO request) {
 
 		Product product = productRepository.findById(id)
 				.orElseThrow(NotFoundProductException::new);
@@ -42,13 +42,7 @@ public class ProductService {
 
 		productRepository.save(product);
 
-		return new ProductResponseDTO(
-				product.getId(),
-				product.getName(),
-				product.getPrice(),
-				product.getStock(),
-				product.getIsVisible()
-		);
+		return product.getId();
 	}
 
 	@Transactional(readOnly = true)

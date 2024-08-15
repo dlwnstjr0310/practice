@@ -29,9 +29,9 @@ public class ProductController implements ProductControllerDocs {
 	}
 
 	@PatchMapping("/{id}")
-	public Response<ProductResponseDTO> modifyProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO request) {
+	public Response<Long> modifyProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO request) {
 
-		return Response.<ProductResponseDTO>builder()
+		return Response.<Long>builder()
 				.data(productService.modifyProduct(id, request))
 				.build();
 	}

@@ -26,6 +26,17 @@ public class CommonExceptionHandler {
 				.build();
 	}
 
+	@ExceptionHandler(OrderException.class)
+	public Response<Void> orderExceptionHandler(OrderException e) {
+
+		Error error = e.getError();
+
+		return Response.<Void>builder()
+				.code(error.getCode())
+				.message(error.getMessage())
+				.build();
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public Response<Void> validExceptionHandler(MethodArgumentNotValidException e) {

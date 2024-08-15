@@ -1,25 +1,38 @@
 package com.study.member.service;
 
 import com.study.member.client.OrderClient;
+import com.study.member.client.ProductClient;
 import com.study.member.domain.entity.WishList;
+import com.study.member.domain.entity.member.Member;
+import com.study.member.exception.member.NotFoundMemberException;
+import com.study.member.exception.member.NotFoundWishListException;
+import com.study.member.exception.member.QuantityNotEnoughException;
+import com.study.member.exception.product.IsNotSaleProductException;
+import com.study.member.exception.product.NotFoundProductException;
+import com.study.member.model.request.AddressRequestDTO;
+import com.study.member.model.request.WishListRequestDTO;
 import com.study.member.model.response.*;
+import com.study.member.repository.AddressRepository;
 import com.study.member.repository.MemberRepository;
 import com.study.member.repository.WishListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import static com.study.member.exception.Error.IS_NOT_SALE_PRODUCT;
+import static com.study.member.exception.Error.NOT_FOUND_PRODUCT;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
 	private final OrderClient orderClient;
+	private final ProductClient productClient;
 	private final MemberRepository memberRepository;
 	private final WishListRepository wishListRepository;
+	private final AddressRepository addressRepository;
 
 	@Transactional(readOnly = true)
 	public MemberResponseDTO getMemberPage(Long id) {
@@ -27,23 +40,57 @@ public class MemberService {
 		// nullable
 		List<WishList> wishList = wishListRepository.findAllByMemberId(id);
 
-		Map<OrderMemberResponseDTO, List<OrderDetailResponseDTO>> memberOrderList =
-				orderClient.getMemberOrderList(id).data();
-
-		List<OrderResponseDTO> orderList = new ArrayList<>();
-
-		memberOrderList.forEach((k, v) -> orderList.add(
-				new OrderResponseDTO(
-						k.id(),
-						k.status(),
-						k.totalPrice(),
-						k.destinationAddress(),
-						v)
-		));
+		List<OrderResponseDTO> memberOrderList = orderClient.getMemberOrderList(id).data();
 
 		return MemberResponseDTO.of(
-				orderList,
+				memberOrderList,
 				WishListResponseDTO.of(wishList)
 		);
+	}
+
+	@Transactional
+	public void createWishList(Long id, WishListRequestDTO request) {
+
+		Response<ProductResponseDTO> productDetail = productClient.getProductDetail(request.productId());
+
+		if (productDetail.code().equals(NOT_FOUND_PRODUCT.getCode())) {
+			throw new NotFoundProductException();
+		}
+		if (productDetail.code().equals(IS_NOT_SALE_PRODUCT.getCode())) {
+			throw new IsNotSaleProductException();
+		}
+
+		Member member = memberRepository.findById(id).orElseThrow(NotFoundMemberException::new);
+		ProductResponseDTO product = productDetail.data();
+
+		wishListRepository.save(
+				request.toEntity(product.price(), member.getId())
+		);
+
+	}
+
+	@Transactional
+	public Long modifyWishList(Long id, Integer quantity) {
+
+		if (quantity < 1) {
+			throw new QuantityNotEnoughException();
+		}
+
+		WishList wishList = wishListRepository.findById(id).orElseThrow(NotFoundWishListException::new);
+
+		wishList.modifyForWishListQuantity(quantity);
+
+		return wishListRepository.save(wishList).getId();
+	}
+
+	@Transactional
+	public void deleteWishList(Long id) {
+		wishListRepository.deleteById(id);
+	}
+
+	@Transactional
+	public void createAddress(AddressRequestDTO request) {
+		//todo: 나중에 isDefault true 면 나머지 다 false 로
+		addressRepository.save(request.toEntity());
 	}
 }

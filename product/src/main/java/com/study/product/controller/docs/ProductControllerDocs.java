@@ -31,7 +31,7 @@ public interface ProductControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 제품입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PatchMapping("/product/{id}")
-	Response<ProductResponseDTO> modifyProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO request);
+	Response<Long> modifyProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO request);
 
 	@Operation(summary = "제품 목록 조회", description = "현재 판매중인 제품 목록을 조회하는 API 입니다.")
 	@ApiResponses(value = {

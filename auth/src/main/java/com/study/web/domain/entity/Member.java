@@ -20,7 +20,6 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@NotBlank
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -30,20 +29,28 @@ public class Member extends BaseTimeEntity implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
+	@NotBlank
 	@Size(max = 50)
 	@Column(unique = true)
 	@Pattern(regexp = CommonConstant.RegExp.EMAIL)
 	String email;
 
+	@NotBlank
 	@Size(max = 255)
 	String password;
 
+	@NotBlank
 	String name;
 
+	@NotBlank
 	@Size(max = 50)
 	@Column(unique = true)
 	@Pattern(regexp = CommonConstant.RegExp.PHONE)
 	String phone;
+
+	@Builder.Default
+	@ColumnDefault("0")
+	Integer tokenVersion = 0;
 
 	@Builder.Default
 	@Enumerated(EnumType.STRING)

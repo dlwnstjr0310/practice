@@ -8,7 +8,6 @@ import com.study.apigateway.auth.exception.token.InvalidTokenException;
 import com.study.apigateway.auth.exception.token.JsonParsingException;
 import com.study.apigateway.auth.jwt.TokenParser;
 import com.study.apigateway.auth.model.response.Response;
-import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -36,7 +35,7 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 
 		return (exchange, chain) -> {
 
-			String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+			String token = tokenParser.getJwt(exchange.getRequest());
 
 			try {
 				/* todo: 토큰이 비어있을때 설정 추가해야함

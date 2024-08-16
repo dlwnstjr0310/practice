@@ -1,29 +1,23 @@
 package com.study.apigateway.auth.filter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.apigateway.auth.exception.Error;
 import com.study.apigateway.auth.exception.token.DifferentTokenVersionException;
 import com.study.apigateway.auth.exception.token.ExpiredTokenException;
 import com.study.apigateway.auth.exception.token.InvalidTokenException;
-import com.study.apigateway.auth.exception.token.JsonParsingException;
-import com.study.apigateway.auth.model.response.Response;
+import com.study.apigateway.auth.exception.token.RegisteredInBlackListException;
 import com.study.apigateway.auth.util.TokenParser;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
+
+import static com.study.apigateway.auth.exception.handler.FilterExceptionHandler.createErrorResponse;
 
 @Component
 public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHeaderFilter.Config> {
@@ -64,10 +58,12 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 
 			} catch (ExpiredTokenException e) {
 				return createErrorResponse(exchange.getResponse(), Error.EXPIRED_TOKEN);
-			} catch (InvalidTokenException e) {
-				return createErrorResponse(exchange.getResponse(), Error.INVALID_TOKEN);
 			} catch (DifferentTokenVersionException e) {
 				return createErrorResponse(exchange.getResponse(), Error.DIFFERENT_TOKEN_VERSION);
+			} catch (RegisteredInBlackListException e) {
+				return createErrorResponse(exchange.getResponse(), Error.REGISTERED_IN_BLACKLIST);
+			} catch (InvalidTokenException e) {
+				return createErrorResponse(exchange.getResponse(), Error.INVALID_TOKEN);
 			}
 
 			return chain.filter(exchange);
@@ -76,30 +72,6 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 
 	private String generateDeviceId(ServerHttpRequest request) {
 		return UUID.nameUUIDFromBytes(Objects.requireNonNull(request.getHeaders().getFirst(HttpHeaders.USER_AGENT)).getBytes()).toString();
-	}
-
-	private Mono<Void> createErrorResponse(ServerHttpResponse response, Error error) {
-
-		response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-		response.getHeaders().add(org.springframework.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-
-		Response<Void> customResponse = Response.<Void>builder()
-				.code(error.getCode())
-				.message(error.getMessage())
-				.build();
-
-		String json;
-
-		try {
-			json = new ObjectMapper().writeValueAsString(customResponse);
-		} catch (JsonProcessingException e) {
-			throw new JsonParsingException();
-		}
-
-		byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
-		DataBuffer buffer = response.bufferFactory().wrap(bytes);
-
-		return response.writeWith(Mono.just(buffer));
 	}
 
 	public static class Config {

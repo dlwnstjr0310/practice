@@ -3,6 +3,7 @@ package com.study.apigateway.auth.util;
 import com.study.apigateway.auth.exception.token.DifferentTokenVersionException;
 import com.study.apigateway.auth.exception.token.ExpiredTokenException;
 import com.study.apigateway.auth.exception.token.InvalidTokenException;
+import com.study.apigateway.auth.exception.token.RegisteredInBlackListException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -44,17 +45,20 @@ public class TokenParser {
 	public SimpleGrantedAuthority isValidToken(String token, String deviceId) {
 		try {
 
-			String refreshToken = redisService.findRefreshTokenInRedis(deviceId).substring(TOKEN_TYPE.length());
+			if (redisService.isBlackList(token)) {
+				throw new RegisteredInBlackListException(token);
+			}
 
-			Claims accessTokenClaims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-			Claims refreshTokenClaims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody();
-
+			Claims accessTokenClaims = parseClaims(token);
 			Integer accessTokenVersion = accessTokenClaims.get(TOKEN_VERSION, Integer.class);
-			Integer refreshTokenVersion = refreshTokenClaims.get(TOKEN_VERSION, Integer.class);
 
 			if (ObjectUtils.isEmpty(accessTokenVersion)) {
 				throw new DifferentTokenVersionException(token);
 			}
+
+			String refreshToken = redisService.findRefreshTokenInRedis(deviceId).substring(TOKEN_TYPE.length());
+			Claims refreshTokenClaims = parseClaims(refreshToken);
+			Integer refreshTokenVersion = refreshTokenClaims.get(TOKEN_VERSION, Integer.class);
 
 			if (!accessTokenVersion.equals(refreshTokenVersion)) {
 				throw new DifferentTokenVersionException(token);
@@ -65,6 +69,8 @@ public class TokenParser {
 			throw new ExpiredTokenException(token);
 		} catch (DifferentTokenVersionException e) {
 			throw new DifferentTokenVersionException(token);
+		} catch (RegisteredInBlackListException e) {
+			throw new RegisteredInBlackListException(token);
 		} catch (Exception e) {
 			throw new InvalidTokenException(token);
 		}
@@ -79,6 +85,16 @@ public class TokenParser {
 		}
 
 		return jwt.substring(TOKEN_TYPE.length());
+	}
+
+	private Claims parseClaims(String token) {
+		try {
+			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+		} catch (ExpiredJwtException e) {
+			throw new ExpiredTokenException(token);
+		} catch (Exception e) {
+			throw new InvalidTokenException(token);
+		}
 	}
 
 }

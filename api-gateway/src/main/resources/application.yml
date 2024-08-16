@@ -5,9 +5,13 @@ eureka:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
     region: ap-northeast-2
-    registry-fetch-interval-seconds: 5
+#    registry-fetch-interval-seconds: 5
 
 spring:
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
   config:
     import: classpath:application-key.yml
   application:

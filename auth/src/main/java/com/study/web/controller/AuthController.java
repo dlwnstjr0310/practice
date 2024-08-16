@@ -5,6 +5,8 @@ import com.study.web.model.request.*;
 import com.study.web.model.response.MemberResponseDTO;
 import com.study.web.model.response.Response;
 import com.study.web.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,40 +40,46 @@ public class AuthController implements AuthControllerDocs {
 	}
 
 	@PostMapping("/mail-certification/verify")
-	public Response<MemberResponseDTO> verifyMail(@Valid @RequestBody VerifyDTO request) {
+	public Response<MemberResponseDTO> verifyMail(HttpServletRequest request,
+	                                              HttpServletResponse response,
+	                                              @Valid @RequestBody VerifyDTO requestDTO) {
 
 		return Response.<MemberResponseDTO>builder()
-				.data(authService.verifyMail(request))
+				.data(authService.verifyMail(request, response, requestDTO))
 				.build();
 	}
 
 	@PostMapping("/login")
-	public Response<MemberResponseDTO> login(@Valid @RequestBody LoginDTO request) {
+	public Response<MemberResponseDTO> login(HttpServletRequest request,
+	                                         HttpServletResponse response,
+	                                         @Valid @RequestBody LoginDTO requestDTO) {
 
 		return Response.<MemberResponseDTO>builder()
-				.data(authService.login(request))
+				.data(authService.login(request, response, requestDTO))
 				.build();
 	}
 
 	@DeleteMapping("/logout")
-	public Response<Void> logout(@Valid @RequestBody LogoutDTO request) {
+	public Response<Void> logout(HttpServletRequest request, @Valid @RequestBody LogoutDTO requestDTO) {
 
-		authService.logout(request);
+		authService.logout(request, requestDTO);
 
 		return Response.<Void>builder()
 				.build();
 	}
 
 	@PostMapping("/token")
-	public Response<MemberResponseDTO> reissueAccessToken(@Valid @RequestBody ReissueAccessTokenDTO request) {
+	public Response<MemberResponseDTO> reissueAccessToken(HttpServletRequest request,
+	                                                      HttpServletResponse response,
+	                                                      @Valid @RequestBody ReissueAccessTokenDTO requestDTO) {
 
 		return Response.<MemberResponseDTO>builder()
-				.data(authService.reissueAccessToken(request))
+				.data(authService.reissueAccessToken(request, response, requestDTO))
 				.build();
 	}
 
 	@PatchMapping("/modify-password")
-	public Response<Void> modifyPassword(@Valid @RequestBody LoginDTO request) {
+	public Response<Void> modifyPassword(@Valid @RequestBody PwdModifyDTO request) {
 
 		authService.modifyPassword(request);
 

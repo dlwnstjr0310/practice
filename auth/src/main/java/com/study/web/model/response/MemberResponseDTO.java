@@ -3,18 +3,25 @@ package com.study.web.model.response;
 import com.study.web.domain.entity.Member;
 
 public record MemberResponseDTO(
-		String accessToken,
-		Long id,
+
+		String tokenType,
+		Long expiresIn,
+		Long memberId,
 		String email,
-		String name
+		String name,
+		String role
 ) {
 
-	public static MemberResponseDTO of(String accessToken, Member member) {
+	public static MemberResponseDTO of(String tokenType,
+	                                   Long expiresIn,
+	                                   Member member) {
 		return new MemberResponseDTO(
-				accessToken,
+				tokenType,
+				expiresIn,
 				member.getId(),
 				member.getEmail(),
-				member.getName()
+				member.getName(),
+				member.getMemberRole().getDescription()
 		);
 	}
 }

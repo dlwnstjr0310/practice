@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,7 +43,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "408", description = "인증번호가 만료되었습니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/auth/mail-certification/verify")
-	Response<MemberResponseDTO> verifyMail(VerifyDTO request);
+	Response<MemberResponseDTO> verifyMail(HttpServletRequest request, HttpServletResponse response, VerifyDTO requestDTO);
 
 	@Operation(summary = "로그인", description = "사용자 로그인 API 입니다.")
 	@ApiResponses(value = {
@@ -51,7 +53,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/auth/login")
-	Response<MemberResponseDTO> login(LoginDTO request);
+	Response<MemberResponseDTO> login(HttpServletRequest request, HttpServletResponse response, LoginDTO requestDTO);
 
 	@Operation(summary = "로그아웃", description = """
 			사용자 로그아웃 API 입니다. \n
@@ -62,7 +64,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@DeleteMapping("/logout")
-	Response<Void> logout(@RequestBody LogoutDTO request);
+	Response<Void> logout(HttpServletRequest request, @RequestBody LogoutDTO requestDTO);
 
 	@Operation(summary = "토큰 재발급", description = "Access Token 재발급 API 입니다.")
 	@ApiResponses(value = {
@@ -74,7 +76,7 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PostMapping("/auth/token")
-	Response<MemberResponseDTO> reissueAccessToken(@Valid @RequestBody ReissueAccessTokenDTO request);
+	Response<MemberResponseDTO> reissueAccessToken(HttpServletRequest request, HttpServletResponse response, @Valid @RequestBody ReissueAccessTokenDTO requestDTO);
 
 	@Operation(summary = "비밀번호 변경", description = "사용자 비밀번호 변경 API 입니다.")
 	@ApiResponses(value = {
@@ -83,6 +85,6 @@ public interface AuthControllerDocs {
 			@ApiResponse(responseCode = "404", description = "존재하지 않는 사용자입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PatchMapping("/modify-password")
-	Response<Void> modifyPassword(@Valid @RequestBody LoginDTO request);
+	Response<Void> modifyPassword(@Valid @RequestBody PwdModifyDTO request);
 }
 

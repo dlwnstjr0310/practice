@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Collections;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -22,7 +25,15 @@ public class SecurityConfig {
 	public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
 
 		http.csrf(ServerHttpSecurity.CsrfSpec::disable);
-		http.cors(ServerHttpSecurity.CorsSpec::disable);
+//		http.cors(ServerHttpSecurity.CorsSpec::disable);
+		http.cors(corsSpec -> corsSpec.configurationSource(request -> {
+			CorsConfiguration config = new CorsConfiguration();
+			config.setAllowedMethods(Collections.singletonList("*"));
+			config.setAllowedHeaders(Collections.singletonList("*"));
+			config.setMaxAge(3600L);
+
+			return config;
+		}));
 
 		http.formLogin(ServerHttpSecurity.FormLoginSpec::disable);
 

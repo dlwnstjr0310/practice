@@ -56,7 +56,7 @@ public class TokenParser {
 				throw new DifferentTokenVersionException(token);
 			}
 
-			String refreshToken = redisService.findRefreshTokenInRedis(deviceId).substring(TOKEN_TYPE.length());
+			String refreshToken = redisService.findRefreshTokenInRedis(deviceId);
 			Claims refreshTokenClaims = parseClaims(refreshToken);
 			Integer refreshTokenVersion = refreshTokenClaims.get(TOKEN_VERSION, Integer.class);
 
@@ -80,11 +80,11 @@ public class TokenParser {
 		String jwt = Optional.ofNullable(request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
 				.orElseThrow(NullPointerException::new);
 
-		if (!StringUtils.hasText(jwt) || !jwt.startsWith(TOKEN_TYPE)) {
+		if (!StringUtils.hasText(jwt)) {
 			throw new InvalidTokenException(jwt);
 		}
 
-		return jwt.substring(TOKEN_TYPE.length());
+		return jwt;
 	}
 
 	private Claims parseClaims(String token) {

@@ -43,6 +43,32 @@ spring:
     openfeign:
       okhttp:
         enabled: true
+      client:
+        config:
+          default:
+            connect-timeout: 5000
+            read-timeout: 5000
+            logger-level: HEADERS
+      circuitbreaker:
+        enabled: true
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        slow-call-duration-threshold:
+          seconds: 5
+        slow-call-rate-threshold: 80
+        failure-rate-threshold: 50
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state:
+          seconds: 30
+
+
 ---
 
 springdoc:

@@ -19,6 +19,7 @@ public class CommonExceptionHandler {
 	public Response<Void> MemberExceptionHandler(MemberException e) {
 
 		Error error = e.getError();
+		e.printStackTrace();
 
 		return Response.<Void>builder()
 				.code(error.getCode())
@@ -30,10 +31,22 @@ public class CommonExceptionHandler {
 	public Response<Void> ProductExceptionHandler(ProductException e) {
 
 		Error error = e.getError();
+		e.printStackTrace();
 
 		return Response.<Void>builder()
 				.code(error.getCode())
 				.message(error.getMessage())
+				.build();
+	}
+
+	@ExceptionHandler(TokenException.class)
+	public Response<Void> tokenExceptionHandler(TokenException e) {
+
+		Error authError = e.getError();
+		e.printStackTrace();
+		return Response.<Void>builder()
+				.code(authError.getCode())
+				.message(authError.getMessage())
 				.build();
 	}
 

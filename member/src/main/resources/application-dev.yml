@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 8081
 
 spring:
   datasource:
@@ -37,6 +37,18 @@ spring:
         format_sql: true
         globally_quoted_identifiers: true
         globally_quoted_identifiers_skip_column_definitions: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
   config:
     import: classpath:application-key.yml
 ---
@@ -68,6 +80,12 @@ logging:
       SQL: debug
       type: error
     com.zaxxer.hikari.HikariDataSource: error
+
+---
+
+security:
+  jwt:
+    key: ${SECURITY_JWT_KEY}
 
 ---
 

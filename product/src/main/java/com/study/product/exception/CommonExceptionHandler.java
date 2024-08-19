@@ -18,6 +18,7 @@ public class CommonExceptionHandler {
 	@ExceptionHandler(ProductException.class)
 	public Response<Void> productExceptionHandler(ProductException e) {
 
+		e.printStackTrace();
 		Error error = e.getError();
 
 		return Response.<Void>builder()
@@ -29,6 +30,7 @@ public class CommonExceptionHandler {
 	@ExceptionHandler(OrderException.class)
 	public Response<Void> orderExceptionHandler(OrderException e) {
 
+		e.printStackTrace();
 		Error error = e.getError();
 
 		return Response.<Void>builder()
@@ -59,6 +61,7 @@ public class CommonExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public Response<Void> exceptionHandler(Exception e) {
+		e.printStackTrace();
 		return Response.<Void>builder()
 				.code(Error.INTERNAL_SERVER_ERROR.getCode())
 				.message(Error.INTERNAL_SERVER_ERROR.getMessage())

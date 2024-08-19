@@ -3,7 +3,6 @@ package com.study.apigateway.auth.filter;
 import com.study.apigateway.auth.exception.Error;
 import com.study.apigateway.auth.exception.token.DifferentTokenVersionException;
 import com.study.apigateway.auth.exception.token.ExpiredTokenException;
-import com.study.apigateway.auth.exception.token.InvalidTokenException;
 import com.study.apigateway.auth.exception.token.RegisteredInBlackListException;
 import com.study.apigateway.auth.util.TokenParser;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -51,7 +50,7 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 
 				if (!ObjectUtils.isEmpty(token)) {
 
-					// todo: 이걸로 권한별 라우팅 설정하기. 좀만있다가..
+					// todo: 이걸로 권한별 라우팅 설정하기. 좀만있다가../ 근데 createResponse 작동 안하는것같기도
 					SimpleGrantedAuthority role = tokenParser.isValidToken(token, deviceId);
 					return chain.filter(exchange);
 				}
@@ -62,7 +61,7 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 				return createErrorResponse(exchange.getResponse(), Error.DIFFERENT_TOKEN_VERSION);
 			} catch (RegisteredInBlackListException e) {
 				return createErrorResponse(exchange.getResponse(), Error.REGISTERED_IN_BLACKLIST);
-			} catch (InvalidTokenException e) {
+			} catch (Exception e) {
 				return createErrorResponse(exchange.getResponse(), Error.INVALID_TOKEN);
 			}
 
@@ -75,6 +74,5 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 	}
 
 	public static class Config {
-		//todo: yml 파일 말고 아마 여기에 권한별 라우팅 설정할것같은디..?
 	}
 }

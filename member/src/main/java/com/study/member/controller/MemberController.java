@@ -1,9 +1,10 @@
 package com.study.member.controller;
 
+import com.study.member.controller.docs.MemberControllerDocs;
 import com.study.member.model.request.AddressRequestDTO;
 import com.study.member.model.request.WishListRequestDTO;
-import com.study.member.model.response.member.MemberResponseDTO;
 import com.study.member.model.response.Response;
+import com.study.member.model.response.member.MemberResponseDTO;
 import com.study.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
-public class MemberController {
+public class MemberController implements MemberControllerDocs {
 
 	private final MemberService memberService;
 

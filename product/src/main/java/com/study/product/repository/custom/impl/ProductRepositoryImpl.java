@@ -27,7 +27,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 		List<OrderSpecifier> orders = QueryDslUtil.getAllOrderSpecifiers(pageable);
 
 		return queryFactory.select(
-						Projections.bean(ProductResponseDTO.class,
+						Projections.constructor(ProductResponseDTO.class,
 								product.id.as("id"),
 								product.name.as("name"),
 								product.price.as("price"),

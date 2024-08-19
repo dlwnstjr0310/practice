@@ -10,7 +10,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,4 +36,8 @@ public class OrderDetail extends BaseTimeEntity {
 	@ManyToOne
 	@JoinColumn(name = "order_id")
 	Order order;
+
+	public void markAsDelete() {
+		this.isDelete = true;
+	}
 }

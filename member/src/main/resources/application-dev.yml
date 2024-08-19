@@ -37,6 +37,18 @@ spring:
         format_sql: true
         globally_quoted_identifiers: true
         globally_quoted_identifiers_skip_column_definitions: true
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: member-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: com.study.member.domain.event.DefaultAddressUpdateEvent
+    listener:
+      ack-mode: record
   data:
     redis:
       host: ${REDIS_HOST}

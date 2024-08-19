@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +31,7 @@ public class WishList {
 	@JoinColumn(name = "member_id")
 	Member member;
 
-	public void modifyForWishListQuantity(Integer quantity) {
+	public void updateForQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 }

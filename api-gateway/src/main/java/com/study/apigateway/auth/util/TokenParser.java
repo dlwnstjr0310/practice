@@ -72,6 +72,8 @@ public class TokenParser {
 		} catch (RegisteredInBlackListException e) {
 			throw new RegisteredInBlackListException(token);
 		} catch (Exception e) {
+			System.out.println("왜;");
+			e.printStackTrace();
 			throw new InvalidTokenException(token);
 		}
 	}
@@ -80,11 +82,11 @@ public class TokenParser {
 		String jwt = Optional.ofNullable(request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
 				.orElseThrow(NullPointerException::new);
 
-		if (!StringUtils.hasText(jwt)) {
+		if (!StringUtils.hasText(jwt) && !jwt.startsWith(TOKEN_TYPE)) {
 			throw new InvalidTokenException(jwt);
 		}
 
-		return jwt;
+		return jwt.substring(TOKEN_TYPE.length());
 	}
 
 	private Claims parseClaims(String token) {
@@ -93,6 +95,7 @@ public class TokenParser {
 		} catch (ExpiredJwtException e) {
 			throw new ExpiredTokenException(token);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new InvalidTokenException(token);
 		}
 	}

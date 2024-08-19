@@ -62,6 +62,7 @@ public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHea
 			} catch (RegisteredInBlackListException e) {
 				return createErrorResponse(exchange.getResponse(), Error.REGISTERED_IN_BLACKLIST);
 			} catch (Exception e) {
+				e.printStackTrace();
 				return createErrorResponse(exchange.getResponse(), Error.INVALID_TOKEN);
 			}
 

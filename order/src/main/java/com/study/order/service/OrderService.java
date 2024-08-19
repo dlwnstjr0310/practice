@@ -4,6 +4,7 @@ import com.study.order.client.MemberClient;
 import com.study.order.client.ProductClient;
 import com.study.order.domain.entity.OrderDetail;
 import com.study.order.domain.entity.order.Order;
+import com.study.order.domain.event.DefaultAddressUpdateEvent;
 import com.study.order.exception.member.NotFoundMemberException;
 import com.study.order.exception.order.AlreadyShippingException;
 import com.study.order.exception.order.OutOfStockException;
@@ -18,7 +19,7 @@ import com.study.order.model.response.order.ProductOrderResponseDTO;
 import com.study.order.repository.OrderDetailRepository;
 import com.study.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,18 +39,14 @@ import static com.study.order.exception.Error.NOT_FOUND_MEMBER;
 @RequiredArgsConstructor
 public class OrderService {
 
+	private final MemberClient memberClient;
+	private final ProductClient productClient;
 	private final OrderRepository orderRepository;
 	private final OrderDetailRepository orderDetailRepository;
-	private final ProductClient productClient;
-	private final MemberClient memberClient;
+	private final KafkaTemplate<String, DefaultAddressUpdateEvent> kafkaTemplate;
 
-	//todo: feignClient -> TransactionEventListener -> kafka
 	@Transactional
 	public void createOrder(OrderRequestDTO request) {
-
-		//todo: 배송지목록에 추가여부 확인,request 에 isDefault 면 member 업데이트 이벤트 발행
-		if (request.isDefault()) {
-		}
 
 		Response<MemberResponseDTO> memberInfo = memberClient.getMemberInfo(request.memberId());
 
@@ -102,10 +99,36 @@ public class OrderService {
 			);
 		});
 
-		order.setTotalPrice(totalPrice.get());
+		order.updateTotalPrice(totalPrice.get());
 
 		orderRepository.save(order);
 		orderDetailRepository.saveAll(orderDetailList);
+
+		if (request.isStoreInAddress()) {
+
+			if (request.isDefault()) {
+				kafkaTemplate.send(
+						"default-address-update",
+						new DefaultAddressUpdateEvent(
+								request.memberId(),
+								request.addressAlias(),
+								request.destinationAddress(),
+								request.zipCode(),
+								request.phone()
+						));
+			} else {
+				kafkaTemplate.send(
+						"store-address",
+						new DefaultAddressUpdateEvent(
+								request.memberId(),
+								request.addressAlias(),
+								request.destinationAddress(),
+								request.zipCode(),
+								request.phone()
+						)
+				);
+			}
+		}
 	}
 
 	@Transactional(readOnly = true)
@@ -130,18 +153,18 @@ public class OrderService {
 		if (status.equalsIgnoreCase("cancel")) {
 			// 부분취소 안된다는 가정하에 진행
 			if (order.getStatus().equals(ORDER_COMPLETED)) {
-				order.setStatus(CANCELED);
+				order.updateStatus(CANCELED);
 
-				orderDetailList.forEach(orderDetail -> orderDetail.setIsDelete(true));
+				orderDetailList.forEach(OrderDetail::markAsDelete);
 			} else {
 				throw new AlreadyShippingException();
 			}
 		} else if (status.equalsIgnoreCase("return")) {
 
 			if (order.getStatus().equals(SHIPPING_COMPLETED)) {
-				order.setStatus(RETURN_PENDING);
+				order.updateStatus(RETURN_PENDING);
 
-				orderDetailList.forEach(orderDetail -> orderDetail.setIsDelete(true));
+				orderDetailList.forEach(OrderDetail::markAsDelete);
 			} else {
 				throw new ReturnPeriodPassedException();
 			}
@@ -151,11 +174,4 @@ public class OrderService {
 		orderDetailRepository.saveAll(orderDetailList);
 	}
 
-	@Transactional
-	@Scheduled(cron = "0 0 0 * * *")
-	public void updateOrderStatus() {
-
-		//todo: 나중에 주문 시간 업데이트하기. 근데 이걸로할지 batch 같은걸로 할지 못정함;
-
-	}
 }

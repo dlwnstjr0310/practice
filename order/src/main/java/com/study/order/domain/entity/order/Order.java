@@ -12,7 +12,6 @@ import static com.study.order.domain.entity.order.Status.ORDER_COMPLETED;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,4 +39,11 @@ public class Order extends BaseTimeEntity {
 	@ColumnDefault("false")
 	Boolean isDelete = false;
 
+	public void updateStatus(Status status) {
+		this.status = status;
+	}
+
+	public void updateTotalPrice(Integer totalPrice) {
+		this.totalPrice = totalPrice;
+	}
 }

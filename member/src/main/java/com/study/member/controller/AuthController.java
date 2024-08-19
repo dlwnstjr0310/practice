@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/member")
 @RequiredArgsConstructor
 public class AuthController implements AuthControllerDocs {
 

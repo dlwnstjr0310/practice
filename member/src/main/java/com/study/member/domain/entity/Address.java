@@ -12,7 +12,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,4 +44,7 @@ public class Address extends BaseTimeEntity {
 	@JoinColumn(name = "member_id")
 	Member member;
 
+	public void markAsFalse() {
+		this.isDefault = false;
+	}
 }

@@ -32,6 +32,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // jpa
@@ -51,12 +52,17 @@ dependencies {
 
     // Feign Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.3'
+
     // Resilience4j
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'io.github.resilience4j:resilience4j-micrometer'
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 
     // eureka client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'

@@ -13,7 +13,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,6 +38,10 @@ public class Product extends BaseTimeEntity {
 	@Builder.Default
 	@ColumnDefault("true")
 	Boolean isVisible = true;
+
+	public void setCurrentStock(Integer stock) {
+		this.stock = stock;
+	}
 
 	public void modifyForProductField(String name, Integer price, Integer stock, Boolean isVisible) {
 		this.name = name;

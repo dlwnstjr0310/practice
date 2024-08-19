@@ -41,7 +41,7 @@ public class ProductOrderService {
 						throw new OutOfStockException();
 					}
 
-					product.setStock(stock);
+					product.setCurrentStock(stock);
 
 					return ProductOrderResponseDTO.of(
 							product.getId(),

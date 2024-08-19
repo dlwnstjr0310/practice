@@ -44,8 +44,6 @@ public class AuthService {
 
 		Member member = request.toEntity();
 
-		//todo: 개인정보도 암호화 해야하는데 너무귀찮음
-		//todo: 여기서 주소 등록까지 해야할듯?
 		member.updatePassword(passwordEncoder.encode(member.getPassword()));
 
 		memberRepository.save(member);

@@ -10,7 +10,8 @@ public record AddressRequestDTO(
 		@NotNull
 		Long memberId,
 
-		String name,
+		@NotNull
+		String addressAlias,
 
 		@NotBlank
 		String address,
@@ -26,7 +27,7 @@ public record AddressRequestDTO(
 ) {
 	public Address toEntity() {
 		return Address.builder()
-				.name(name)
+				.name(addressAlias)
 				.address(address)
 				.zipCode(zipCode)
 				.phone(phone)

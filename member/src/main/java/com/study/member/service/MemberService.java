@@ -2,6 +2,7 @@ package com.study.member.service;
 
 import com.study.member.client.OrderClient;
 import com.study.member.client.ProductClient;
+import com.study.member.domain.entity.Address;
 import com.study.member.domain.entity.WishList;
 import com.study.member.domain.entity.member.Member;
 import com.study.member.exception.member.NotFoundMemberException;
@@ -11,11 +12,11 @@ import com.study.member.exception.product.IsNotSaleProductException;
 import com.study.member.exception.product.NotFoundProductException;
 import com.study.member.model.request.AddressRequestDTO;
 import com.study.member.model.request.WishListRequestDTO;
-import com.study.member.model.response.*;
+import com.study.member.model.response.Response;
 import com.study.member.model.response.member.MemberResponseDTO;
+import com.study.member.model.response.member.WishListResponseDTO;
 import com.study.member.model.response.order.OrderResponseDTO;
 import com.study.member.model.response.product.ProductResponseDTO;
-import com.study.member.model.response.member.WishListResponseDTO;
 import com.study.member.repository.AddressRepository;
 import com.study.member.repository.MemberRepository;
 import com.study.member.repository.WishListRepository;
@@ -82,7 +83,7 @@ public class MemberService {
 
 		WishList wishList = wishListRepository.findById(id).orElseThrow(NotFoundWishListException::new);
 
-		wishList.modifyForWishListQuantity(quantity);
+		wishList.updateForQuantity(quantity);
 
 		return wishListRepository.save(wishList).getId();
 	}
@@ -94,7 +95,17 @@ public class MemberService {
 
 	@Transactional
 	public void createAddress(AddressRequestDTO request) {
-		//todo: 나중에 isDefault true 면 나머지 다 false 로
-		addressRepository.save(request.toEntity());
+
+		if (request.isDefault()) {
+			List<Address> addressList = addressRepository.findByMemberId(request.memberId());
+
+			addressList.forEach(Address::markAsFalse);
+
+			addressList.add(request.toEntity());
+
+			addressRepository.saveAll(addressList);
+		} else {
+			addressRepository.save(request.toEntity());
+		}
 	}
 }

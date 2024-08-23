@@ -5,6 +5,7 @@ import com.study.member.client.ProductClient;
 import com.study.member.domain.entity.Address;
 import com.study.member.domain.entity.WishList;
 import com.study.member.domain.entity.member.Member;
+import com.study.member.domain.event.AddressEvent;
 import com.study.member.exception.member.NotFoundMemberException;
 import com.study.member.exception.member.NotFoundWishListException;
 import com.study.member.exception.member.QuantityNotEnoughException;
@@ -107,5 +108,17 @@ public class MemberService {
 		} else {
 			addressRepository.save(request.toEntity());
 		}
+	}
+
+	@Transactional
+	public void updateAddress(AddressEvent request) {
+
+		addressRepository.save(Address.builder()
+				.member(Member.builder().id(request.memberId()).build())
+				.name(request.addressAlias())
+				.address(request.destinationAddress())
+				.zipCode(request.zipCode())
+				.phone(request.phone())
+				.build());
 	}
 }

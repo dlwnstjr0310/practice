@@ -16,6 +16,7 @@ import java.util.Objects;
 public class CommonExceptionHandler {
 
 	@ExceptionHandler(OrderException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public Response<Void> orderExceptionHandler(OrderException e) {
 
 		Error error = e.getError();
@@ -39,6 +40,19 @@ public class CommonExceptionHandler {
 
 	@ExceptionHandler(MemberException.class)
 	public Response<Void> MemberExceptionHandler(MemberException e) {
+
+		Error error = e.getError();
+
+		return Response.<Void>builder()
+				.code(error.getCode())
+				.message(error.getMessage())
+				.build();
+	}
+
+
+	@ExceptionHandler(ServerException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public Response<Void> ServerExceptionHandler(ServerException e) {
 
 		Error error = e.getError();
 

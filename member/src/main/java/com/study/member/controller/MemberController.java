@@ -1,6 +1,7 @@
 package com.study.member.controller;
 
 import com.study.member.controller.docs.MemberControllerDocs;
+import com.study.member.domain.event.AddressEvent;
 import com.study.member.model.request.AddressRequestDTO;
 import com.study.member.model.request.WishListRequestDTO;
 import com.study.member.model.response.Response;
@@ -17,6 +18,16 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController implements MemberControllerDocs {
 
 	private final MemberService memberService;
+
+	@PostMapping("/address")
+	public Response<Void> updateAddress(@RequestBody AddressEvent request) {
+
+		memberService.updateAddress(request);
+		return Response.<Void>builder()
+				.code(HttpStatus.CREATED.value())
+				.message(HttpStatus.CREATED.getReasonPhrase())
+				.build();
+	}
 
 	@GetMapping("/my-page/{id}")
 	public Response<MemberResponseDTO> getMemberPage(@PathVariable Long id) {

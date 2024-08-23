@@ -4,12 +4,14 @@ import com.study.order.client.MemberClient;
 import com.study.order.client.ProductClient;
 import com.study.order.domain.entity.OrderDetail;
 import com.study.order.domain.entity.order.Order;
-import com.study.order.domain.event.DefaultAddressUpdateEvent;
+import com.study.order.domain.event.producer.AddressEvent;
 import com.study.order.exception.member.NotFoundMemberException;
 import com.study.order.exception.order.AlreadyShippingException;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.exception.order.ReturnPeriodPassedException;
 import com.study.order.exception.product.IsNotSaleProductException;
+import com.study.order.exception.server.GatewayTimeoutException;
+import com.study.order.exception.server.ServiceUnavailableException;
 import com.study.order.model.request.OrderRequestDTO;
 import com.study.order.model.request.ProductOrderRequestDTO;
 import com.study.order.model.response.Response;
@@ -19,7 +21,6 @@ import com.study.order.model.response.order.ProductOrderResponseDTO;
 import com.study.order.repository.OrderDetailRepository;
 import com.study.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.study.order.domain.entity.order.Status.*;
-import static com.study.order.exception.Error.IS_NOT_SALE_PRODUCT;
-import static com.study.order.exception.Error.NOT_FOUND_MEMBER;
+import static com.study.order.exception.Error.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,15 +43,20 @@ public class OrderService {
 	private final ProductClient productClient;
 	private final OrderRepository orderRepository;
 	private final OrderDetailRepository orderDetailRepository;
-	private final KafkaTemplate<String, DefaultAddressUpdateEvent> kafkaTemplate;
 
 	@Transactional
 	public void createOrder(OrderRequestDTO request) {
 
 		Response<MemberResponseDTO> memberInfo = memberClient.getMemberInfo(request.memberId());
 
-		if (memberInfo.code().equals(NOT_FOUND_MEMBER.getCode())) {
-			throw new NotFoundMemberException();
+		if (!memberInfo.code().equals(200)) {
+			if (memberInfo.code().equals(NOT_FOUND_MEMBER.getCode())) {
+				throw new NotFoundMemberException();
+			} else if (memberInfo.code().equals(GATEWAY_TIMEOUT.getCode())) {
+				throw new GatewayTimeoutException();
+			} else {
+				throw new ServiceUnavailableException();
+			}
 		}
 
 		Response<List<ProductOrderResponseDTO>> productOrderList = productClient.getProductOrderList(
@@ -60,8 +65,14 @@ public class OrderService {
 						.toList()
 		);
 
-		if (productOrderList.code().equals(IS_NOT_SALE_PRODUCT.getCode())) {
-			throw new IsNotSaleProductException();
+		if (!productOrderList.code().equals(200)) {
+			if (productOrderList.code().equals(IS_NOT_SALE_PRODUCT.getCode())) {
+				throw new IsNotSaleProductException();
+			} else if (productOrderList.code().equals(GATEWAY_TIMEOUT.getCode())) {
+				throw new GatewayTimeoutException();
+			} else {
+				throw new ServiceUnavailableException();
+			}
 		}
 
 		Map<Long, ProductOrderResponseDTO> productMap = productOrderList.data().stream()
@@ -106,28 +117,15 @@ public class OrderService {
 
 		if (request.isStoreInAddress()) {
 
-			if (request.isDefault()) {
-				kafkaTemplate.send(
-						"default-address-update",
-						new DefaultAddressUpdateEvent(
-								request.memberId(),
-								request.addressAlias(),
-								request.destinationAddress(),
-								request.zipCode(),
-								request.phone()
-						));
-			} else {
-				kafkaTemplate.send(
-						"store-address",
-						new DefaultAddressUpdateEvent(
-								request.memberId(),
-								request.addressAlias(),
-								request.destinationAddress(),
-								request.zipCode(),
-								request.phone()
-						)
-				);
-			}
+			memberClient.updateAddress(
+					new AddressEvent(
+							request.memberId(),
+							request.addressAlias(),
+							request.destinationAddress(),
+							request.zipCode(),
+							request.phone()
+					)
+			);
 		}
 	}
 
@@ -153,7 +151,7 @@ public class OrderService {
 		if (status.equalsIgnoreCase("cancel")) {
 			// 부분취소 안된다는 가정하에 진행
 			if (order.getStatus().equals(ORDER_COMPLETED)) {
-				order.updateStatus(CANCELED);
+				order.updateStatus(ORDER_CANCELED);
 
 				orderDetailList.forEach(OrderDetail::markAsDelete);
 			} else {
@@ -174,4 +172,15 @@ public class OrderService {
 		orderDetailRepository.saveAll(orderDetailList);
 	}
 
+	@Transactional
+	public void store(OrderDetail orderDetail) {
+
+		Order order = orderDetail.getOrder();
+
+		order.updateStatus(ORDER_COMPLETED);
+
+		orderRepository.save(order);
+		orderDetailRepository.save(orderDetail);
+
+	}
 }

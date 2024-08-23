@@ -27,7 +27,9 @@ public enum Error {
 	ALREADY_SHIPPING(3002, "이미 배송 중인 상품입니다."),
 	RETURN_PERIOD_PASSED(3003, "반품 기간이 지났습니다."),
 
-	INTERNAL_SERVER_ERROR(9999, "서버 오류입니다.");
+	INTERNAL_SERVER_ERROR(9999, "서버 오류입니다."),
+	SERVICE_UNAVAILABLE(10000, "이용량 증가로 현재 서비스가 불가능합니다."),
+	GATEWAY_TIMEOUT(10001, "응답 시간을 초과하였습니다.");
 
 	Integer code;
 	String message;

@@ -2,13 +2,12 @@ package com.study.order.domain.entity.order;
 
 import com.study.order.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.ColumnDefault;
 
-import static com.study.order.domain.entity.order.Status.ORDER_COMPLETED;
+import static com.study.order.domain.entity.order.Status.ORDER_PROGRESS;
 
 @Entity
 @Getter
@@ -28,12 +27,12 @@ public class Order extends BaseTimeEntity {
 	@NotNull
 	Integer totalPrice;
 
-	@NotBlank
+	@NotNull
 	String destinationAddress;
 
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	Status status = ORDER_COMPLETED;
+	Status status = ORDER_PROGRESS; // 상태 추가
 
 	@Builder.Default
 	@ColumnDefault("false")

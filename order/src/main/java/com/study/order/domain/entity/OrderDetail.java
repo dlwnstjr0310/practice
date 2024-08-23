@@ -23,10 +23,8 @@ public class OrderDetail extends BaseTimeEntity {
 	@NotNull
 	Long productId;
 
-	@NotNull
 	Integer quantity;
 
-	@NotNull
 	Integer price;
 
 	@Builder.Default

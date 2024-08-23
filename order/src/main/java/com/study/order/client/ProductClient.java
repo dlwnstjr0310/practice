@@ -1,8 +1,9 @@
 package com.study.order.client;
 
 import com.study.order.model.request.ProductOrderRequestDTO;
-import com.study.order.model.response.order.ProductOrderResponseDTO;
 import com.study.order.model.response.Response;
+import com.study.order.model.response.order.ProductOrderResponseDTO;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "product-service", url = "${service.url.product}")
+@CircuitBreaker(name = "product")
+@FeignClient(name = "product-service", url = "${service.url.product}", fallbackFactory = ProductClientFallbackFactory.class)
 public interface ProductClient {
 
 	@PatchMapping("/product/order")

@@ -57,6 +57,23 @@ services:
       KAFKA_CLUSTERS_0_READONLY: "false"
       SERVER_PORT: 9999
 
+  controller:
+    image: ngrinder/controller:latest
+    container_name: ngrinder
+    restart: always
+    ports:
+      - "9000:80"
+      - "16001:16001"
+      - "12000-12009:12000-12009"
+    volumes:
+      - ./ngrinder-controller:/opt/ngrinder-controller
+  agent:
+    image: ngrinder/agent:latest
+    container_name: ngrinder-agent
+    restart: always
+    links:
+      - controller
+
 volumes:
   redis-data:
   kafka-data:

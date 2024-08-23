@@ -1,6 +1,6 @@
-package com.study.order.domain.event;
+package com.study.order.domain.event.producer;
 
-public record DefaultAddressUpdateEvent(
+public record AddressEvent(
 
 		Long memberId,
 

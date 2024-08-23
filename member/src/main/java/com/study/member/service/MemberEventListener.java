@@ -1,6 +1,6 @@
 package com.study.member.service;
 
-import com.study.member.domain.event.DefaultAddressUpdateEvent;
+import com.study.member.domain.event.AddressEvent;
 import com.study.member.model.request.AddressRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,8 +12,8 @@ public class MemberEventListener {
 
 	private final MemberService memberService;
 
-	@KafkaListener(topics = "default-address-update", groupId = "member-group")
-	public void handleAddressUpdateEvent(DefaultAddressUpdateEvent event) {
+	@KafkaListener(topics = "address-update-event")
+	public void handleAddressUpdateEvent(AddressEvent event) {
 
 		memberService.createAddress(
 				new AddressRequestDTO(
@@ -27,8 +27,8 @@ public class MemberEventListener {
 		);
 	}
 
-	@KafkaListener(topics = "store-address", groupId = "member-group")
-	public void handlerAddressStoreEvent(DefaultAddressUpdateEvent event) {
+	@KafkaListener(topics = "address-store-event")
+	public void handlerAddressStoreEvent(AddressEvent event) {
 
 		memberService.createAddress(
 				new AddressRequestDTO(

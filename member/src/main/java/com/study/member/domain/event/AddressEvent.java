@@ -1,6 +1,6 @@
 package com.study.member.domain.event;
 
-public record DefaultAddressUpdateEvent(
+public record AddressEvent(
 
 		Long memberId,
 

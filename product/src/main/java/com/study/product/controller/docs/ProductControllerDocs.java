@@ -2,7 +2,6 @@ package com.study.product.controller.docs;
 
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
-import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.model.response.ProductSearchResultDTO;
 import com.study.product.model.response.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,14 +41,5 @@ public interface ProductControllerDocs {
 			Pageable pageable,
 			SearchConditionDTO searchCondition
 	);
-
-	@Operation(summary = "제품 상세 조회", description = "특정 제품의 상세 정보를 조회하는 API 입니다.")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Response.class))),
-			@ApiResponse(responseCode = "400", description = "판매중인 상품이 아닙니다.", content = @Content(schema = @Schema(implementation = Response.class))),
-			@ApiResponse(responseCode = "404", description = "존재하지 않는 제품입니다.", content = @Content(schema = @Schema(implementation = Response.class)))
-	})
-	@GetMapping("/product/{id}")
-	Response<ProductResponseDTO> getProductDetail(@PathVariable Long id);
 
 }

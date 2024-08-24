@@ -3,7 +3,6 @@ package com.study.product.controller;
 import com.study.product.controller.docs.ProductControllerDocs;
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
-import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.model.response.ProductSearchResultDTO;
 import com.study.product.model.response.Response;
 import com.study.product.service.ProductService;
@@ -42,14 +41,6 @@ public class ProductController implements ProductControllerDocs {
 
 		return Response.<ProductSearchResultDTO>builder()
 				.data(productService.getCurrentSaleProductList(pageable, searchCondition))
-				.build();
-	}
-
-	@GetMapping("/{id}")
-	public Response<ProductResponseDTO> getProductDetail(@PathVariable Long id) {
-
-		return Response.<ProductResponseDTO>builder()
-				.data(productService.getProductDetail(id))
 				.build();
 	}
 }

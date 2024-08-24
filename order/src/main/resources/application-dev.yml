@@ -33,10 +33,8 @@ spring:
       hibernate:
         jdbc:
           time_zone: Asia/Seoul
-        #        show-sql: true
-        show-sql: false
-        #        format_sql: true
-        format_sql: false
+        show-sql: true
+        format_sql: true
         globally_quoted_identifiers: true
         globally_quoted_identifiers_skip_column_definitions: true
   config:
@@ -83,7 +81,7 @@ resilience4j:
         slow-call-duration-threshold: # 느린 호출 지속 시간 설정
           seconds: 5
         permitted-number-of-calls-in-half-open-state: 3 # half-open 상태에서 호출 허용 횟수 설정
-        sliding-window-size: 10 # 슬라이딩 윈도우 크기 설정
+        sliding-window-size: 100 # 슬라이딩 윈도우 크기 설정
         register-health-indicator: true # 헬스 지표 등록 여부 설정
         minimum-number-of-calls: 5 # 최소 호출 횟수 설정
         wait-duration-in-open-state: # open 상태 지속 시간 설정

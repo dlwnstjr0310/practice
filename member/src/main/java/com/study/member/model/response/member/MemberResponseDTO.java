@@ -1,17 +1,32 @@
 package com.study.member.model.response.member;
 
+import com.study.member.domain.entity.member.Member;
 import com.study.member.model.response.order.OrderResponseDTO;
 
 import java.util.List;
 
 public record MemberResponseDTO(
 
-		List<OrderResponseDTO> orderList,
+		Long id,
 
-		List<WishListResponseDTO> wishList
+		String name,
+
+		String email,
+
+		AdditionalData additionalData,
+
+		List<OrderResponseDTO> orderList
+
 ) {
-	public static MemberResponseDTO of(List<OrderResponseDTO> orderList,
-	                                   List<WishListResponseDTO> wishList) {
-		return new MemberResponseDTO(orderList, wishList);
+	public static MemberResponseDTO of(Member member,
+	                                   AdditionalData additionalData,
+	                                   List<OrderResponseDTO> orderList) {
+		return new MemberResponseDTO(
+				member.getId(),
+				member.getName(),
+				member.getEmail(),
+				additionalData,
+				orderList
+		);
 	}
 }

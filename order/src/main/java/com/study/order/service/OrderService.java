@@ -10,8 +10,8 @@ import com.study.order.exception.order.AlreadyShippingException;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.exception.order.ReturnPeriodPassedException;
 import com.study.order.exception.product.IsNotSaleProductException;
+import com.study.order.exception.server.CircuitBreakerOpenException;
 import com.study.order.exception.server.GatewayTimeoutException;
-import com.study.order.exception.server.ServiceUnavailableException;
 import com.study.order.model.request.OrderRequestDTO;
 import com.study.order.model.request.ProductOrderRequestDTO;
 import com.study.order.model.response.Response;
@@ -55,7 +55,7 @@ public class OrderService {
 			} else if (memberInfo.code().equals(GATEWAY_TIMEOUT.getCode())) {
 				throw new GatewayTimeoutException();
 			} else {
-				throw new ServiceUnavailableException();
+				throw new CircuitBreakerOpenException();
 			}
 		}
 
@@ -71,7 +71,7 @@ public class OrderService {
 			} else if (productOrderList.code().equals(GATEWAY_TIMEOUT.getCode())) {
 				throw new GatewayTimeoutException();
 			} else {
-				throw new ServiceUnavailableException();
+				throw new CircuitBreakerOpenException();
 			}
 		}
 

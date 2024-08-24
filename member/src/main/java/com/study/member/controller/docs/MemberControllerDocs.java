@@ -1,9 +1,9 @@
 package com.study.member.controller.docs;
 
-import com.study.member.model.request.AddressRequestDTO;
-import com.study.member.model.request.WishListRequestDTO;
-import com.study.member.model.response.member.MemberResponseDTO;
+import com.study.member.model.request.member.AddressRequestDTO;
+import com.study.member.model.request.member.WishListRequestDTO;
 import com.study.member.model.response.Response;
+import com.study.member.model.response.member.MemberResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

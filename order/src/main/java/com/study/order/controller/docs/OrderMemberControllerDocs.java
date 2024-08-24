@@ -1,7 +1,7 @@
 package com.study.order.controller.docs;
 
-import com.study.order.model.response.order.OrderResponseDTO;
 import com.study.order.model.response.Response;
+import com.study.order.model.response.order.OrderResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,5 +21,5 @@ public interface OrderMemberControllerDocs {
 			@ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@GetMapping("/order/member/{id}")
-	Response<List<OrderResponseDTO>> getMemberOrderList(@PathVariable Long id);
+	List<OrderResponseDTO> getMemberOrderList(@PathVariable Long id);
 }

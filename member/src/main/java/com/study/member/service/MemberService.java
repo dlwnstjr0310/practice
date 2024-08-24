@@ -11,11 +11,11 @@ import com.study.member.exception.member.NotFoundWishListException;
 import com.study.member.exception.member.QuantityNotEnoughException;
 import com.study.member.exception.product.IsNotSaleProductException;
 import com.study.member.exception.product.NotFoundProductException;
-import com.study.member.model.request.AddressRequestDTO;
-import com.study.member.model.request.WishListRequestDTO;
+import com.study.member.model.request.member.AddressRequestDTO;
+import com.study.member.model.request.member.WishListRequestDTO;
 import com.study.member.model.response.Response;
+import com.study.member.model.response.member.AdditionalData;
 import com.study.member.model.response.member.MemberResponseDTO;
-import com.study.member.model.response.member.WishListResponseDTO;
 import com.study.member.model.response.order.OrderResponseDTO;
 import com.study.member.model.response.product.ProductResponseDTO;
 import com.study.member.repository.AddressRepository;
@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.study.member.exception.Error.IS_NOT_SALE_PRODUCT;
 import static com.study.member.exception.Error.NOT_FOUND_PRODUCT;
@@ -43,15 +45,28 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public MemberResponseDTO getMemberPage(Long id) {
 
-		// nullable
-		List<WishList> wishList = wishListRepository.findAllByMemberId(id);
-
-		List<OrderResponseDTO> memberOrderList = orderClient.getMemberOrderList(id).data();
-
-		return MemberResponseDTO.of(
-				memberOrderList,
-				WishListResponseDTO.of(wishList)
+		CompletableFuture<List<Address>> addressListFuture = CompletableFuture.supplyAsync(() ->
+				addressRepository.findByMemberId(id)
 		);
+
+		CompletableFuture<List<WishList>> wishListFuture = CompletableFuture.supplyAsync(() ->
+				wishListRepository.findAllByMemberId(id)
+		);
+
+		CompletableFuture<List<OrderResponseDTO>> orderListFuture = CompletableFuture.supplyAsync(() ->
+				orderClient.getMemberOrderList(id)
+		);
+
+		AtomicReference<Member> atomicMember = new AtomicReference<>();
+
+		return addressListFuture
+				.thenCombine(wishListFuture, (addressList, wishList) -> {
+					atomicMember.set(addressList.get(0).getMember());
+					return AdditionalData.of(addressList, wishList);
+				})
+				.thenCombine(orderListFuture, (additionalData, orderList) ->
+						MemberResponseDTO.of(atomicMember.get(), additionalData, orderList)
+				).join();
 	}
 
 	@Transactional

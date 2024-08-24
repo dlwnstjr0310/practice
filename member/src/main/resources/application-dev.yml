@@ -61,8 +61,35 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true
+  cloud:
+    openfeign:
+      okhttp:
+        enabled: true
+      client:
+        config:
+          default:
+            connect-timeout: 5000
+            read-timeout: 5000
+            logger-level: HEADERS
+      circuitbreaker:
+        enabled: true
   config:
     import: classpath:application-key.yml
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        failure-rate-threshold: 50 # 실패 임계치 설정
+        slow-call-rate-threshold: 80 # 느린 호출 임계치 설정
+        slow-call-duration-threshold: # 느린 호출 지속 시간 설정
+          seconds: 5
+        permitted-number-of-calls-in-half-open-state: 3 # half-open 상태에서 호출 허용 횟수 설정
+        sliding-window-size: 100 # 슬라이딩 윈도우 크기 설정
+        register-health-indicator: true # 헬스 지표 등록 여부 설정
+        minimum-number-of-calls: 5 # 최소 호출 횟수 설정
+        wait-duration-in-open-state: # open 상태 지속 시간 설정
+          seconds: 15
 ---
 
 springdoc:

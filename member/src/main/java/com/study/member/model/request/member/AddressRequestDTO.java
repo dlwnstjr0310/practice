@@ -1,4 +1,4 @@
-package com.study.member.model.request;
+package com.study.member.model.request.member;
 
 import com.study.member.domain.entity.Address;
 import com.study.member.domain.entity.member.Member;

@@ -3,8 +3,10 @@ package com.study.product.service;
 import com.study.product.domain.entity.Product;
 import com.study.product.exception.order.OutOfStockException;
 import com.study.product.exception.product.IsNotSaleProductException;
+import com.study.product.exception.product.NotFoundProductException;
 import com.study.product.model.request.ProductOrderRequestDTO;
 import com.study.product.model.response.ProductOrderResponseDTO;
+import com.study.product.model.response.ProductResponseDTO;
 import com.study.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProductOrderService {
+public class ProductFeignService {
 
 	private final ProductRepository productRepository;
 
@@ -72,5 +74,18 @@ public class ProductOrderService {
 					);
 				})
 				.toList();
+	}
+
+	@Transactional(readOnly = true)
+	public ProductResponseDTO getProductDetail(Long id) {
+
+		Product product = productRepository.findById(id)
+				.orElseThrow(NotFoundProductException::new);
+
+		if (!product.getIsVisible()) {
+			throw new IsNotSaleProductException();
+		}
+
+		return ProductResponseDTO.of(product);
 	}
 }

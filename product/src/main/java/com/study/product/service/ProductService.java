@@ -1,7 +1,6 @@
 package com.study.product.service;
 
 import com.study.product.domain.entity.Product;
-import com.study.product.exception.product.IsNotSaleProductException;
 import com.study.product.exception.product.NotFoundProductException;
 import com.study.product.model.request.ProductRequestDTO;
 import com.study.product.model.request.SearchConditionDTO;
@@ -53,18 +52,5 @@ public class ProductService {
 				search.size(),
 				search
 		);
-	}
-
-	@Transactional(readOnly = true)
-	public ProductResponseDTO getProductDetail(Long id) {
-
-		Product product = productRepository.findById(id)
-				.orElseThrow(NotFoundProductException::new);
-
-		if (!product.getIsVisible()) {
-			throw new IsNotSaleProductException();
-		}
-
-		return ProductResponseDTO.of(product);
 	}
 }

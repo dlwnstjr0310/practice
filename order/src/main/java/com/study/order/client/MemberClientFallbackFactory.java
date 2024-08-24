@@ -18,24 +18,19 @@ public class MemberClientFallbackFactory implements FallbackFactory<MemberClient
 	@Override
 	public MemberClient create(Throwable cause) {
 		return new MemberClient() {
+			//todo: 추가 설정 해야함
 			@Override
 			public Response<MemberResponseDTO> getMemberInfo(Long id) {
 
 				if (cause instanceof CallNotPermittedException) {
-//					log.error("Connection refused: ", cause);
-					log.error("Connection refused");
 					return Response.<MemberResponseDTO>builder()
 							.code(HttpStatus.SC_SERVICE_UNAVAILABLE)
 							.build();
 				} else if (cause instanceof TimeoutException) {
-//					log.error("Timeout occurred: ", cause);
-					log.error("Timeout occurred");
 					return Response.<MemberResponseDTO>builder()
 							.code(HttpStatus.SC_GATEWAY_TIMEOUT)
 							.build();
 				} else {
-//					log.error("Unexpected error: ", cause);
-					log.error("Unexpected error");
 					return Response.<MemberResponseDTO>builder()
 							.code(HttpStatus.SC_INTERNAL_SERVER_ERROR)
 							.build();
@@ -45,20 +40,14 @@ public class MemberClientFallbackFactory implements FallbackFactory<MemberClient
 			@Override
 			public Response<Void> updateAddress(AddressEvent request) {
 				if (cause instanceof CallNotPermittedException) {
-//					log.error("Connection refused: ", cause);
-					log.error("Connection refused");
 					return Response.<Void>builder()
 							.code(HttpStatus.SC_SERVICE_UNAVAILABLE)
 							.build();
 				} else if (cause instanceof TimeoutException) {
-//					log.error("Timeout occurred: ", cause);
-					log.error("Timeout occurred");
 					return Response.<Void>builder()
 							.code(HttpStatus.SC_GATEWAY_TIMEOUT)
 							.build();
 				} else {
-//					log.error("Unexpected error: ", cause);
-					log.error("Unexpected error");
 					return Response.<Void>builder()
 							.code(HttpStatus.SC_INTERNAL_SERVER_ERROR)
 							.build();

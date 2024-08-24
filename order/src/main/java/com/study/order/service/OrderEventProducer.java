@@ -14,7 +14,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,7 +40,6 @@ public class OrderEventProducer {
 	private final ConcurrentHashMap<String, OrderDetail> map = new ConcurrentHashMap<>();
 
 	//todo: 동시 요청수가 커넥션풀보다 많아지면 개느려짐; 해결하셈
-	@Transactional
 	public void createOrder(DiscountProductOrderRequestDTO request) {
 
 		String key = PRODUCT_KEY_PREFIX + request.product().productId().toString();

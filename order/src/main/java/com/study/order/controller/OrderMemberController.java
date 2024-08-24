@@ -2,7 +2,6 @@ package com.study.order.controller;
 
 import com.study.order.controller.docs.OrderMemberControllerDocs;
 import com.study.order.model.response.order.OrderResponseDTO;
-import com.study.order.model.response.Response;
 import com.study.order.service.OrderMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +19,9 @@ public class OrderMemberController implements OrderMemberControllerDocs {
 	private final OrderMemberService orderMemberService;
 
 	@GetMapping("/{id}")
-	public Response<List<OrderResponseDTO>> getMemberOrderList(@PathVariable Long id) {
+	public List<OrderResponseDTO> getMemberOrderList(@PathVariable Long id) {
 
-		return Response.<List<OrderResponseDTO>>builder()
-				.data(orderMemberService.getMemberOrderList(id))
-				.build();
+		return orderMemberService.getMemberOrderList(id);
+
 	}
 }

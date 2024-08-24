@@ -50,6 +50,18 @@ public class CommonExceptionHandler {
 				.build();
 	}
 
+	@ExceptionHandler(ServerException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public Response<Void> ServerExceptionHandler(ServerException e) {
+
+		Error error = e.getError();
+
+		return Response.<Void>builder()
+				.code(error.getCode())
+				.message(error.getMessage())
+				.build();
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public Response<Void> validExceptionHandler(MethodArgumentNotValidException e) {

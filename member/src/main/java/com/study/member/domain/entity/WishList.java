@@ -24,9 +24,6 @@ public class WishList {
 	@NotNull
 	Integer quantity;
 
-	@NotNull
-	Integer price;
-
 	@ManyToOne
 	@JoinColumn(name = "member_id")
 	Member member;

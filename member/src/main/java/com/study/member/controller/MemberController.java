@@ -5,7 +5,7 @@ import com.study.member.domain.event.AddressEvent;
 import com.study.member.model.request.member.AddressRequestDTO;
 import com.study.member.model.request.member.WishListRequestDTO;
 import com.study.member.model.response.Response;
-import com.study.member.model.response.member.MemberResponseDTO;
+import com.study.member.model.response.member.MyPageResponseDTO;
 import com.study.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +30,9 @@ public class MemberController implements MemberControllerDocs {
 	}
 
 	@GetMapping("/my-page/{id}")
-	public Response<MemberResponseDTO> getMemberPage(@PathVariable Long id) {
+	public Response<MyPageResponseDTO> getMemberPage(@PathVariable Long id) {
 
-		return Response.<MemberResponseDTO>builder()
+		return Response.<MyPageResponseDTO>builder()
 				.data(memberService.getMemberPage(id))
 				.build();
 	}

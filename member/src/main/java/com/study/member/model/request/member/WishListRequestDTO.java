@@ -14,13 +14,12 @@ public record WishListRequestDTO(
 
 ) {
 
-	public WishList toEntity(Integer price, Long memberId) {
+	public WishList toEntity(Long memberId) {
 
 		return WishList.builder()
+				.member(Member.builder().id(memberId).build())
 				.productId(productId)
 				.quantity(quantity)
-				.price(price)
-				.member(Member.builder().id(memberId).build())
 				.build();
 	}
 }

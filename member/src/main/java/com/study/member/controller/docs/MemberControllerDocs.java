@@ -3,7 +3,7 @@ package com.study.member.controller.docs;
 import com.study.member.model.request.member.AddressRequestDTO;
 import com.study.member.model.request.member.WishListRequestDTO;
 import com.study.member.model.response.Response;
-import com.study.member.model.response.member.MemberResponseDTO;
+import com.study.member.model.response.member.MyPageResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,7 +19,7 @@ public interface MemberControllerDocs {
 	@Operation(summary = "마이페이지 조회", description = "위시리스트와 주문 내역을 조회하는 API 입니다.")
 	@ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = Response.class)))
 	@GetMapping("/my-page/{id}")
-	Response<MemberResponseDTO> getMemberPage(@PathVariable Long id);
+	Response<MyPageResponseDTO> getMemberPage(@PathVariable Long id);
 
 	@Operation(summary = "위시리스트 생성", description = "위시리스트를 생성하는 API 입니다.")
 	@ApiResponses(value = {

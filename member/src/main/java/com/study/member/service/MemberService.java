@@ -9,15 +9,11 @@ import com.study.member.domain.event.AddressEvent;
 import com.study.member.exception.member.NotFoundMemberException;
 import com.study.member.exception.member.NotFoundWishListException;
 import com.study.member.exception.member.QuantityNotEnoughException;
-import com.study.member.exception.product.IsNotSaleProductException;
-import com.study.member.exception.product.NotFoundProductException;
 import com.study.member.model.request.member.AddressRequestDTO;
 import com.study.member.model.request.member.WishListRequestDTO;
-import com.study.member.model.response.Response;
-import com.study.member.model.response.member.AdditionalData;
-import com.study.member.model.response.member.MemberResponseDTO;
+import com.study.member.model.response.member.MemberInfoResponseDTO;
+import com.study.member.model.response.member.MyPageResponseDTO;
 import com.study.member.model.response.order.OrderResponseDTO;
-import com.study.member.model.response.product.ProductResponseDTO;
 import com.study.member.repository.AddressRepository;
 import com.study.member.repository.MemberRepository;
 import com.study.member.repository.WishListRepository;
@@ -27,10 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static com.study.member.exception.Error.IS_NOT_SALE_PRODUCT;
-import static com.study.member.exception.Error.NOT_FOUND_PRODUCT;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +35,7 @@ public class MemberService {
 	private final AddressRepository addressRepository;
 
 	@Transactional(readOnly = true)
-	public MemberResponseDTO getMemberPage(Long id) {
+	public MyPageResponseDTO getMemberPage(Long id) {
 
 		CompletableFuture<List<Address>> addressListFuture = CompletableFuture.supplyAsync(() ->
 				addressRepository.findByMemberId(id)
@@ -57,37 +49,21 @@ public class MemberService {
 				orderClient.getMemberOrderList(id)
 		);
 
-		AtomicReference<Member> atomicMember = new AtomicReference<>();
 
 		return addressListFuture
-				.thenCombine(wishListFuture, (addressList, wishList) -> {
-					atomicMember.set(addressList.get(0).getMember());
-					return AdditionalData.of(addressList, wishList);
-				})
-				.thenCombine(orderListFuture, (additionalData, orderList) ->
-						MemberResponseDTO.of(atomicMember.get(), additionalData, orderList)
-				).join();
+				.thenCombine(wishListFuture, (addressList, wishList) ->
+						MemberInfoResponseDTO.of(addressList.get(0).getMember(), addressList, wishList)
+				)
+				.thenCombine(orderListFuture, MyPageResponseDTO::of)
+				.join();
 	}
 
 	@Transactional
 	public void createWishList(Long id, WishListRequestDTO request) {
 
-		Response<ProductResponseDTO> productDetail = productClient.getProductDetail(request.productId());
-
-		if (productDetail.code().equals(NOT_FOUND_PRODUCT.getCode())) {
-			throw new NotFoundProductException();
-		}
-		if (productDetail.code().equals(IS_NOT_SALE_PRODUCT.getCode())) {
-			throw new IsNotSaleProductException();
-		}
-
 		Member member = memberRepository.findById(id).orElseThrow(NotFoundMemberException::new);
-		ProductResponseDTO product = productDetail.data();
 
-		wishListRepository.save(
-				request.toEntity(product.price(), member.getId())
-		);
-
+		wishListRepository.save(request.toEntity(member.getId()));
 	}
 
 	@Transactional

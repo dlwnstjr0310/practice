@@ -4,23 +4,25 @@ import com.study.order.domain.entity.OrderDetail;
 import com.study.order.domain.entity.order.Order;
 import com.study.order.domain.event.consumer.PaymentResultEvent;
 import com.study.order.domain.event.producer.AddressEvent;
+import com.study.order.domain.event.producer.InventoryManagementEvent;
 import com.study.order.domain.event.producer.OrderCreatedEvent;
-import com.study.order.domain.event.producer.OrderSuccessEvent;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.model.request.DiscountProductOrderRequestDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.study.order.domain.entity.order.Status.ORDER_COMPLETED;
+import static com.study.order.domain.entity.order.Status.PAYMENT_COMPLETED;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderEventProducer {
@@ -30,7 +32,7 @@ public class OrderEventProducer {
 	private static final String ORDER_CREATED_EVENT = "order-created-event";
 	private static final String ADDRESS_UPDATE_EVENT = "address-update-event";
 	private static final String ADDRESS_STORE_EVENT = "address-store-event";
-	private static final String ORDER_SUCCESS_EVENT = "order-success-event";
+	private static final String INVENTORY_MANAGEMENT_EVENT = "inventory-management-event";
 
 	private final OrderService orderService;
 	private final RedisService redisService;
@@ -79,7 +81,6 @@ public class OrderEventProducer {
 					.price(price)
 					.build();
 
-			log.info("주문 이벤트 생성");
 			sendEvent(ORDER_CREATED_EVENT,
 					new OrderCreatedEvent(
 							tempId,
@@ -112,20 +113,41 @@ public class OrderEventProducer {
 		}
 	}
 
-	public void createOrderSuccessEvent(PaymentResultEvent event) {
+	public void handleInventoryManagementEvent(PaymentResultEvent event) {
 
 		if (map.containsKey(event.orderId())) {
 
-			log.info("주문 성공");
-			sendEvent(ORDER_SUCCESS_EVENT,
-					new OrderSuccessEvent(
-							event.productId(),
-							event.quantity()
-					)
-			);
+			if (event.status().equals(PAYMENT_COMPLETED)) {
+				Map<Long, Integer> productQuantityMap = new HashMap<>();
 
-			orderService.store(map.remove(event.orderId()));
+				productQuantityMap.put(event.productId(), event.quantity());
+
+				sendEvent(INVENTORY_MANAGEMENT_EVENT,
+						new InventoryManagementEvent(
+								productQuantityMap,
+								false
+						)
+				);
+			}
+
+			orderService.store(map.remove(event.orderId()), event.status());
 		}
+	}
+
+	public void handleInventoryManagementEvent(List<OrderDetail> orderDetailList) {
+
+		Map<Long, Integer> productQuantityMap = new HashMap<>();
+
+		orderDetailList.forEach(orderDetail ->
+				productQuantityMap.put(orderDetail.getProductId(), orderDetail.getQuantity())
+		);
+
+		sendEvent(INVENTORY_MANAGEMENT_EVENT,
+				new InventoryManagementEvent(
+						productQuantityMap,
+						true
+				)
+		);
 	}
 
 	private void sendEvent(String topic, Object event) {

@@ -20,19 +20,15 @@ public class ProductFeignController implements ProductOrderControllerDocs {
 	private final ProductFeignService productFeignService;
 
 	@PatchMapping("/order")
-	public Response<List<ProductOrderResponseDTO>> modifyProductStock(@Valid @RequestBody List<ProductOrderRequestDTO> request) {
+	public List<ProductOrderResponseDTO> modifyProductStock(@Valid @RequestBody List<ProductOrderRequestDTO> request) {
 
-		return Response.<List<ProductOrderResponseDTO>>builder()
-				.data(productFeignService.modifyProductStock(request))
-				.build();
+		return productFeignService.modifyProductStock(request);
 	}
 
 	@GetMapping("/order")
-	public Response<List<ProductOrderResponseDTO>> getProductOrderList(@Valid @RequestParam List<Long> productIdList) {
+	public List<ProductOrderResponseDTO> getProductOrderList(@Valid @RequestParam List<Long> productIdList) {
 
-		return Response.<List<ProductOrderResponseDTO>>builder()
-				.data(productFeignService.getProductOrderList(productIdList))
-				.build();
+		return productFeignService.getProductOrderList(productIdList);
 	}
 
 	@GetMapping("/{id}")

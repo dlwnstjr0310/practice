@@ -6,9 +6,11 @@ import com.study.member.exception.server.GatewayTimeoutException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.ws.rs.InternalServerErrorException;
 import org.springframework.cloud.openfeign.FallbackFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeoutException;
 
+@Component
 public class OrderClientFallbackFactory implements FallbackFactory<OrderClient> {
 
 	@Override

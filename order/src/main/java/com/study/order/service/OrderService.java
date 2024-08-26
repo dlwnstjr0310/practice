@@ -4,18 +4,13 @@ import com.study.order.client.MemberClient;
 import com.study.order.client.ProductClient;
 import com.study.order.domain.entity.OrderDetail;
 import com.study.order.domain.entity.order.Order;
+import com.study.order.domain.entity.order.Status;
 import com.study.order.domain.event.producer.AddressEvent;
-import com.study.order.exception.member.NotFoundMemberException;
 import com.study.order.exception.order.AlreadyShippingException;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.exception.order.ReturnPeriodPassedException;
-import com.study.order.exception.product.IsNotSaleProductException;
-import com.study.order.exception.server.CircuitBreakerOpenException;
-import com.study.order.exception.server.GatewayTimeoutException;
 import com.study.order.model.request.OrderRequestDTO;
 import com.study.order.model.request.ProductOrderRequestDTO;
-import com.study.order.model.response.Response;
-import com.study.order.model.response.member.MemberResponseDTO;
 import com.study.order.model.response.order.OrderResponseDTO;
 import com.study.order.model.response.order.ProductOrderResponseDTO;
 import com.study.order.repository.OrderDetailRepository;
@@ -33,7 +28,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.study.order.domain.entity.order.Status.*;
-import static com.study.order.exception.Error.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,40 +36,19 @@ public class OrderService {
 	private final MemberClient memberClient;
 	private final ProductClient productClient;
 	private final OrderRepository orderRepository;
+	private final OrderEventProducer orderEventProducer;
 	private final OrderDetailRepository orderDetailRepository;
 
 	@Transactional
-	public void createOrder(OrderRequestDTO request) {
+	public synchronized void createOrder(OrderRequestDTO request) {
 
-		Response<MemberResponseDTO> memberInfo = memberClient.getMemberInfo(request.memberId());
-
-		if (!memberInfo.code().equals(200)) {
-			if (memberInfo.code().equals(NOT_FOUND_MEMBER.getCode())) {
-				throw new NotFoundMemberException();
-			} else if (memberInfo.code().equals(GATEWAY_TIMEOUT.getCode())) {
-				throw new GatewayTimeoutException();
-			} else {
-				throw new CircuitBreakerOpenException();
-			}
-		}
-
-		Response<List<ProductOrderResponseDTO>> productOrderList = productClient.getProductOrderList(
+		List<ProductOrderResponseDTO> productOrderList = productClient.getProductOrderList(
 				request.productList().stream()
 						.map(ProductOrderRequestDTO::productId)
 						.toList()
 		);
 
-		if (!productOrderList.code().equals(200)) {
-			if (productOrderList.code().equals(IS_NOT_SALE_PRODUCT.getCode())) {
-				throw new IsNotSaleProductException();
-			} else if (productOrderList.code().equals(GATEWAY_TIMEOUT.getCode())) {
-				throw new GatewayTimeoutException();
-			} else {
-				throw new CircuitBreakerOpenException();
-			}
-		}
-
-		Map<Long, ProductOrderResponseDTO> productMap = productOrderList.data().stream()
+		Map<Long, ProductOrderResponseDTO> productMap = productOrderList.stream()
 				.collect(Collectors.toMap(ProductOrderResponseDTO::productId, Function.identity()));
 
 		request.productList().forEach(product -> {
@@ -86,17 +59,17 @@ public class OrderService {
 			}
 		});
 
-		Response<List<ProductOrderResponseDTO>> productList = productClient.modifyProductStock(request.productList());
+		List<ProductOrderResponseDTO> productList = productClient.modifyProductStock(request.productList());
 
 		AtomicInteger totalPrice = new AtomicInteger();
 		Set<OrderDetail> orderDetailList = new LinkedHashSet<>();
 
 		Order order = Order.builder()
-				.memberId(memberInfo.data().id())
+				.memberId(request.memberId())
 				.destinationAddress(request.destinationAddress())
 				.build();
 
-		productList.data().forEach(product -> {
+		productList.forEach(product -> {
 
 			totalPrice.addAndGet(product.quantity() * product.piecePrice());
 
@@ -129,22 +102,9 @@ public class OrderService {
 		}
 	}
 
-	@Transactional(readOnly = true)
-	public OrderResponseDTO getOrderList(Long id) {
-
-		List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(id);
-		Order order = orderDetailList.get(0).getOrder();
-
-		return OrderResponseDTO.of(
-				order,
-				orderDetailList
-		);
-	}
-
 	@Transactional
 	public void modifyOrderStatus(Long id, String status) {
 
-		//todo: 주문 상태 변경 후 재고 복구 이벤트 발행
 		List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(id);
 		Order order = orderDetailList.get(0).getOrder();
 
@@ -170,17 +130,41 @@ public class OrderService {
 
 		orderRepository.save(order);
 		orderDetailRepository.saveAll(orderDetailList);
+
+		orderEventProducer.handleInventoryManagementEvent(orderDetailList);
 	}
 
 	@Transactional
-	public void store(OrderDetail orderDetail) {
+	public void store(OrderDetail orderDetail, Status status) {
 
 		Order order = orderDetail.getOrder();
 
-		order.updateStatus(ORDER_COMPLETED);
+		if (status.equals(PAYMENT_COMPLETED)) {
+			order.updateStatus(ORDER_COMPLETED);
+		} else {
+			order.updateStatus(PAYMENT_FAILED);
+		}
 
 		orderRepository.save(order);
 		orderDetailRepository.save(orderDetail);
 
+	}
+
+	@Transactional(readOnly = true)
+	public List<OrderResponseDTO> getMemberOrderList(Long id) {
+
+		return orderDetailRepository.findOrderListAndOrderDetailListByMemberId(id);
+	}
+
+	@Transactional(readOnly = true)
+	public OrderResponseDTO getOrderDetailList(Long id) {
+
+		List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(id);
+		Order order = orderDetailList.get(0).getOrder();
+
+		return OrderResponseDTO.of(
+				order,
+				orderDetailList
+		);
 	}
 }

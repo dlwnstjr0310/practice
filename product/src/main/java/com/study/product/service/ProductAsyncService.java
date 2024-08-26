@@ -1,13 +1,15 @@
 package com.study.product.service;
 
 import com.study.product.domain.entity.Product;
-import com.study.product.domain.event.consumer.OrderSuccessEvent;
+import com.study.product.domain.event.consumer.InventoryManagementEvent;
 import com.study.product.exception.product.NotFoundProductException;
 import com.study.product.model.request.DiscountSaleProductRequestDTO;
 import com.study.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,12 +36,18 @@ public class ProductAsyncService {
 	}
 
 	@Transactional
-	public void decreaseStock(OrderSuccessEvent event) {
+	public void managementStock(InventoryManagementEvent event) {
 
-		productRepository.findById(event.productId())
+		Map<Long, Integer> productQuantityMap = event.productQuantityMap();
+
+		productQuantityMap.forEach((key, value) -> productRepository.findById(key)
 				.ifPresent(product -> {
-					product.setCurrentStock(product.getStock() - event.quantity());
+					if (event.isIncrease()) {
+						product.setCurrentStock(product.getStock() + value);
+					} else {
+						product.setCurrentStock(product.getStock() - value);
+					}
 					productRepository.save(product);
-				});
+				}));
 	}
 }

@@ -1,7 +1,7 @@
 package com.study.order.client;
 
+import com.study.order.client.fallback.ProductClientFallbackFactory;
 import com.study.order.model.request.ProductOrderRequestDTO;
-import com.study.order.model.response.Response;
 import com.study.order.model.response.order.ProductOrderResponseDTO;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
@@ -18,9 +18,9 @@ import java.util.List;
 public interface ProductClient {
 
 	@PatchMapping("/product/order")
-	Response<List<ProductOrderResponseDTO>> modifyProductStock(@Valid @RequestBody List<ProductOrderRequestDTO> productList);
+	List<ProductOrderResponseDTO> modifyProductStock(@Valid @RequestBody List<ProductOrderRequestDTO> productList);
 
 	@GetMapping("/product/order")
-	Response<List<ProductOrderResponseDTO>> getProductOrderList(@Valid @RequestParam List<Long> productIdList);
+	List<ProductOrderResponseDTO> getProductOrderList(@Valid @RequestParam List<Long> productIdList);
 
 }

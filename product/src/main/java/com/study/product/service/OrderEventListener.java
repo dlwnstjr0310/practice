@@ -11,7 +11,7 @@ public class OrderEventListener {
 
 	private static final String INVENTORY_MANAGEMENT_EVENT = "inventory-management-event";
 
-	private final ProductAsyncService productService;
+	private final ProductService productService;
 
 	@KafkaListener(topics = INVENTORY_MANAGEMENT_EVENT,
 			properties = "spring.json.value.default.type=com.study.product.domain.event.consumer.InventoryManagementEvent"

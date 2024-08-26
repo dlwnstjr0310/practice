@@ -10,9 +10,8 @@ public record WishListResponseDTO(
 
 		Long productId,
 
-		Integer quantity,
+		Integer quantity
 
-		Integer price
 ) {
 
 	public static List<WishListResponseDTO> of(List<WishList> wishList) {
@@ -25,8 +24,7 @@ public record WishListResponseDTO(
 		return new WishListResponseDTO(
 				wishList.getId(),
 				wishList.getProductId(),
-				wishList.getQuantity(),
-				wishList.getPrice()
+				wishList.getQuantity()
 		);
 	}
 }

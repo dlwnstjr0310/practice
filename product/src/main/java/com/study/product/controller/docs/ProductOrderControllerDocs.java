@@ -24,7 +24,7 @@ public interface ProductOrderControllerDocs {
 			@ApiResponse(responseCode = "400", description = "재고가 부족합니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@PatchMapping("/product/order")
-	Response<List<ProductOrderResponseDTO>> modifyProductStock(@Valid @RequestBody List<ProductOrderRequestDTO> request);
+	List<ProductOrderResponseDTO> modifyProductStock(@Valid @RequestBody List<ProductOrderRequestDTO> request);
 
 	@Operation(summary = "제품 주문 전단계", description = "제품 주문 전단계에서 주문 가능 여부를 확인하고, 재고와 가격을 확인하는 API 입니다.")
 	@ApiResponses(value = {
@@ -32,7 +32,7 @@ public interface ProductOrderControllerDocs {
 			@ApiResponse(responseCode = "400", description = "주문 불가능한 제품이 포함되어 있습니다.", content = @Content(schema = @Schema(implementation = Response.class)))
 	})
 	@GetMapping("/product/order")
-	Response<List<ProductOrderResponseDTO>> getProductOrderList(@Valid @RequestParam List<Long> productIdList);
+	List<ProductOrderResponseDTO> getProductOrderList(@Valid @RequestParam List<Long> productIdList);
 
 	@Operation(summary = "제품 상세 조회", description = "특정 제품의 상세 정보를 조회하는 API 입니다.")
 	@ApiResponses(value = {

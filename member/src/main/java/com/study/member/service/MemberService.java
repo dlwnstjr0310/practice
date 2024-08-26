@@ -1,7 +1,6 @@
 package com.study.member.service;
 
 import com.study.member.client.OrderClient;
-import com.study.member.client.ProductClient;
 import com.study.member.domain.entity.Address;
 import com.study.member.domain.entity.WishList;
 import com.study.member.domain.entity.member.Member;
@@ -29,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 public class MemberService {
 
 	private final OrderClient orderClient;
-	private final ProductClient productClient;
 	private final MemberRepository memberRepository;
 	private final WishListRepository wishListRepository;
 	private final AddressRepository addressRepository;
@@ -48,7 +46,6 @@ public class MemberService {
 		CompletableFuture<List<OrderResponseDTO>> orderListFuture = CompletableFuture.supplyAsync(() ->
 				orderClient.getMemberOrderList(id)
 		);
-
 
 		return addressListFuture
 				.thenCombine(wishListFuture, (addressList, wishList) ->

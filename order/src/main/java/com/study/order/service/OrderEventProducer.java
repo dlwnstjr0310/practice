@@ -41,7 +41,6 @@ public class OrderEventProducer {
 
 	private final ConcurrentHashMap<String, OrderDetail> map = new ConcurrentHashMap<>();
 
-	//todo: 동시 요청수가 커넥션풀보다 많아지면 개느려짐; 해결하셈
 	public void createOrder(DiscountProductOrderRequestDTO request) {
 
 		String key = PRODUCT_KEY_PREFIX + request.product().productId().toString();

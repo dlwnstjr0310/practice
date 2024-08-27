@@ -36,7 +36,6 @@ public class OrderService {
 	private final MemberClient memberClient;
 	private final ProductClient productClient;
 	private final OrderRepository orderRepository;
-	private final OrderEventProducer orderEventProducer;
 	private final OrderDetailRepository orderDetailRepository;
 
 	@Transactional
@@ -103,7 +102,7 @@ public class OrderService {
 	}
 
 	@Transactional
-	public void modifyOrderStatus(Long id, String status) {
+	public List<OrderDetail> modifyOrderStatus(Long id, String status) {
 
 		List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderId(id);
 		Order order = orderDetailList.get(0).getOrder();
@@ -131,7 +130,7 @@ public class OrderService {
 		orderRepository.save(order);
 		orderDetailRepository.saveAll(orderDetailList);
 
-		orderEventProducer.handleInventoryManagementEvent(orderDetailList);
+		return orderDetailList;
 	}
 
 	@Transactional
@@ -141,6 +140,8 @@ public class OrderService {
 
 		if (status.equals(PAYMENT_COMPLETED)) {
 			order.updateStatus(ORDER_COMPLETED);
+		} else if (status.equals(ORDER_CANCELED)) {
+			order.updateStatus(ORDER_CANCELED);
 		} else {
 			order.updateStatus(PAYMENT_FAILED);
 		}

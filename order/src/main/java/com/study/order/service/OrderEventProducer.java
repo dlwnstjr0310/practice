@@ -6,6 +6,7 @@ import com.study.order.domain.event.consumer.PaymentResultEvent;
 import com.study.order.domain.event.producer.AddressEvent;
 import com.study.order.domain.event.producer.InventoryManagementEvent;
 import com.study.order.domain.event.producer.OrderCreatedEvent;
+import com.study.order.exception.order.OrderBeenCanceledException;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.model.request.DiscountProductOrderRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +15,10 @@ import org.redisson.api.RedissonClient;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.study.order.domain.entity.order.Status.ORDER_COMPLETED;
+import static com.study.order.domain.entity.order.Status.ORDER_PROGRESS;
 import static com.study.order.domain.entity.order.Status.PAYMENT_COMPLETED;
 
 @Service
@@ -34,6 +32,7 @@ public class OrderEventProducer {
 	private static final String ADDRESS_STORE_EVENT = "address-store-event";
 	private static final String INVENTORY_MANAGEMENT_EVENT = "inventory-management-event";
 
+	private final Random random = new Random();
 	private final OrderService orderService;
 	private final RedisService redisService;
 	private final RedissonClient redissonClient;
@@ -46,12 +45,13 @@ public class OrderEventProducer {
 		String key = PRODUCT_KEY_PREFIX + request.product().productId().toString();
 		RLock lock = redissonClient.getLock(REDISSON_KEY_PREFIX + key);
 
+		if (random.nextDouble() < 0.2) {
+			throw new OrderBeenCanceledException();
+		}
+
 		lock.lock();
-		Order order;
-		OrderDetail orderDetail;
 
 		String tempId = UUID.randomUUID().toString();
-
 		try {
 
 			String value = redisService.getValue(key);
@@ -67,30 +67,28 @@ public class OrderEventProducer {
 
 			redisService.storeInRedis(key, currentQuantity + ":" + price);
 
-			order = Order.builder()
-					.memberId(request.memberId())
-					.totalPrice(price * request.product().quantity())
-					.destinationAddress(request.destinationAddress())
-					.build();
-
-			orderDetail = OrderDetail.builder()
-					.order(order)
-					.productId(request.product().productId())
-					.quantity(request.product().quantity())
-					.price(price)
-					.build();
-
 			sendEvent(ORDER_CREATED_EVENT,
 					new OrderCreatedEvent(
 							tempId,
-							orderDetail.getProductId(),
-							orderDetail.getQuantity(),
-							ORDER_COMPLETED
+							request.product().productId(),
+							request.product().quantity(),
+							ORDER_PROGRESS
 					)
 			);
 
-			map.put(tempId, orderDetail);
-
+			map.put(
+					tempId,
+					OrderDetail.builder()
+							.order(Order.builder()
+									.memberId(request.memberId())
+									.totalPrice(price * request.product().quantity())
+									.destinationAddress(request.destinationAddress())
+									.build())
+							.productId(request.product().productId())
+							.quantity(request.product().quantity())
+							.price(price)
+							.build()
+			);
 		} finally {
 			lock.unlock();
 		}
@@ -110,6 +108,11 @@ public class OrderEventProducer {
 				sendEvent(ADDRESS_STORE_EVENT, event);
 			}
 		}
+	}
+
+	public void modifyOrderStatus(Long orderId, String status) {
+
+		handleInventoryManagementEvent(orderService.modifyOrderStatus(orderId, status));
 	}
 
 	public void handleInventoryManagementEvent(PaymentResultEvent event) {
@@ -133,7 +136,7 @@ public class OrderEventProducer {
 		}
 	}
 
-	public void handleInventoryManagementEvent(List<OrderDetail> orderDetailList) {
+	private void handleInventoryManagementEvent(List<OrderDetail> orderDetailList) {
 
 		Map<Long, Integer> productQuantityMap = new HashMap<>();
 

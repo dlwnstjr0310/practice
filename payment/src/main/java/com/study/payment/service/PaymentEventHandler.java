@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
-import static com.study.payment.domain.common.Status.*;
+import static com.study.payment.domain.common.Status.PAYMENT_COMPLETED;
+import static com.study.payment.domain.common.Status.PAYMENT_FAILED;
 
 @Service
 @RequiredArgsConstructor
@@ -24,18 +25,6 @@ public class PaymentEventHandler {
 
 	@KafkaListener(topics = ORDER_CREATED_EVENT)
 	public void handleOrderCreatedEvent(OrderCreatedEvent event) {
-
-		if (random.nextDouble() < 0.2) {
-			// 고객 변심 이탈
-			sendEvent(PAYMENT_RESULT_EVENT,
-					new PaymentResultEvent(
-							event.orderId(),
-							event.productId(),
-							event.quantity(),
-							ORDER_CANCELED
-					));
-			return;
-		}
 
 		if (random.nextDouble() < 0.2) {
 			// 결제 실패 이탈

@@ -45,7 +45,7 @@ public class OrderController implements OrderControllerDocs {
 	@PatchMapping("/{id}")
 	public Response<Void> modifyOrderStatus(@PathVariable Long id, @RequestParam String status) {
 
-		orderService.modifyOrderStatus(id, status);
+		orderEventProducer.modifyOrderStatus(id, status);
 		return Response.<Void>builder()
 				.build();
 	}

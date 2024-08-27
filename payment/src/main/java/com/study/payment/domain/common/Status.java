@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Status {
 
+	ORDER_PROGRESS("주문 진행중"),
 	ORDER_COMPLETED("주문 완료"),
 	ORDER_CANCELED("취소"),
 	PAYMENT_COMPLETED("결제 완료"),

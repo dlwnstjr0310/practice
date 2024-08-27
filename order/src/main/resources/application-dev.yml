@@ -86,6 +86,24 @@ resilience4j:
         minimum-number-of-calls: 5 # 최소 호출 횟수 설정
         wait-duration-in-open-state: # open 상태 지속 시간 설정
           seconds: 15
+  retry:
+    instances:
+      memberClient:
+        max-attempts: 3
+        wait-duration:
+          seconds: 1
+        retry-exceptions:
+          - com.study.order.exception.ServerException
+        ignore-exceptions:
+          - jakarta.ws.rs.InternalServerErrorException
+      productClient:
+        max-attempts: 3
+        wait-duration:
+          seconds: 1
+        retry-exceptions:
+          - com.study.order.exception.ServerException
+        ignore-exceptions:
+          - jakarta.ws.rs.InternalServerErrorException
 
 ---
 

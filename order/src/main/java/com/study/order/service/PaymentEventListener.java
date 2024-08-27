@@ -7,7 +7,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import static com.study.order.domain.entity.order.Status.PAYMENT_FAILED;
+import static com.study.order.domain.entity.order.Status.PAYMENT_COMPLETED;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +17,6 @@ public class PaymentEventListener {
 	private static final String REDISSON_KEY_PREFIX = "lock_";
 	private static final String PRODUCT_KEY_PREFIX = "product:";
 
-	private final OrderService orderService;
 	private final RedisService redisService;
 	private final RedissonClient redissonClient;
 	private final OrderEventProducer orderEventProducer;
@@ -27,7 +26,7 @@ public class PaymentEventListener {
 	)
 	public void handlePaymentResultEvent(PaymentResultEvent event) {
 
-		if (event.status().equals(PAYMENT_FAILED)) {
+		if (!event.status().equals(PAYMENT_COMPLETED)) {
 			String key = PRODUCT_KEY_PREFIX + event.productId().toString();
 			RLock lock = redissonClient.getLock(REDISSON_KEY_PREFIX + key);
 

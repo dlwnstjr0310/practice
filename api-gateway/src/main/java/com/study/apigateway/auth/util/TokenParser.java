@@ -72,8 +72,6 @@ public class TokenParser {
 		} catch (RegisteredInBlackListException e) {
 			throw new RegisteredInBlackListException(token);
 		} catch (Exception e) {
-			System.out.println("왜;");
-			e.printStackTrace();
 			throw new InvalidTokenException(token);
 		}
 	}

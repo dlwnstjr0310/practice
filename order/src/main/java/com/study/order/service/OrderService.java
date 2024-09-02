@@ -7,6 +7,7 @@ import com.study.order.domain.entity.order.Order;
 import com.study.order.domain.entity.order.Status;
 import com.study.order.domain.event.producer.AddressEvent;
 import com.study.order.exception.order.AlreadyShippingException;
+import com.study.order.exception.order.NotFoundOrderException;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.exception.order.ReturnPeriodPassedException;
 import com.study.order.model.request.OrderRequestDTO;
@@ -138,17 +139,20 @@ public class OrderService {
 
 		Order order = orderDetail.getOrder();
 
-		if (status.equals(PAYMENT_COMPLETED)) {
-			order.updateStatus(ORDER_COMPLETED);
-		} else if (status.equals(ORDER_CANCELED)) {
-			order.updateStatus(ORDER_CANCELED);
-		} else {
-			order.updateStatus(PAYMENT_FAILED);
-		}
+		order.updateStatus(status);
 
 		orderRepository.save(order);
 		orderDetailRepository.save(orderDetail);
+	}
 
+	@Transactional
+	public void store(Long id, Status status) {
+
+		Order order = orderRepository.findById(id).orElseThrow(NotFoundOrderException::new);
+
+		order.updateStatus(status);
+
+		orderRepository.save(order);
 	}
 
 	@Transactional(readOnly = true)

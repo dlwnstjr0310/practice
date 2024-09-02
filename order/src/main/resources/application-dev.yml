@@ -1,6 +1,15 @@
 server:
   port: 8083
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics, prometheus, health, info
+  metrics:
+    tags:
+      application: order-server
+
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -12,8 +21,7 @@ spring:
     hikari:
       pool-name: hikari-pool
       catalog: order
-      minimum-idle: 5
-      maximum-pool-size: 100
+      maximum-pool-size: 13
       data-source-properties:
         idleTimeout: 600000
         maxLifetime: 1800000

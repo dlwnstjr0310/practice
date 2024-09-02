@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -48,7 +50,7 @@ public class ProductService {
 
 		redisService.storeInRedis(
 				PRODUCT_KEY_PREFIX + request.id(),
-				request.quantity().toString() + ":" + discountPrice
+				request.quantity().toString() + "|" + discountPrice + "|" + ZonedDateTime.of(request.saleDateTime(), ZoneId.of("Asia/Seoul"))
 		);
 
 	}

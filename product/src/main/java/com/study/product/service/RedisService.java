@@ -10,14 +10,14 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class RedisService {
 
-	private static final Duration EXPIRATION_DURATION = Duration.ofDays(1);
+	private static final Duration EXPIRATION_DURATION = Duration.ofDays(7);
 
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	public void storeInRedis(String productId, String quantity) {
+	public void storeInRedis(String key, String value) {
 		redisTemplate.opsForValue().set(
-				productId,
-				quantity,
+				key,
+				value,
 				EXPIRATION_DURATION
 		);
 	}

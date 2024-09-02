@@ -4,7 +4,7 @@ import com.study.order.domain.entity.order.Status;
 
 public record PaymentResultEvent(
 
-		String orderId,
+		Long orderId,
 
 		Long productId,
 

@@ -2,6 +2,8 @@ package com.study.product.model.request;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 public record DiscountSaleProductRequestDTO(
 
 		@NotNull
@@ -11,7 +13,10 @@ public record DiscountSaleProductRequestDTO(
 		Integer discountRate,
 
 		@NotNull
-		Integer quantity
+		Integer quantity,
+
+		@NotNull
+		LocalDateTime saleDateTime
 
 ) {
 }

@@ -14,15 +14,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-@CircuitBreaker(name = "order")
 @FeignClient(name = "order-service", url = "${service.url.order}")
 public interface OrderClient {
 
+	@CircuitBreaker(name = "order")
 	@GetMapping("/order/member/{id}")
 	@Retry(name = "orderClient", fallbackMethod = "orderFallback")
 	List<OrderResponseDTO> getMemberOrderList(@PathVariable Long id);
 
-	default List<OrderResponseDTO> orderFallback(Throwable cause) {
+	default List<OrderResponseDTO> orderFallback(Long id, Throwable cause) {
+
+		System.out.println("요기 실행");
 		if (cause instanceof CallNotPermittedException) {
 			throw new CircuitBreakerOpenException();
 		} else if (cause instanceof TimeoutException) {

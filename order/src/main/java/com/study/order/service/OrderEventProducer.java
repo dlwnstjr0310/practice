@@ -10,10 +10,11 @@ import com.study.order.exception.order.BeforePurchaseTimeException;
 import com.study.order.exception.order.OrderBeenCanceledException;
 import com.study.order.exception.order.OutOfStockException;
 import com.study.order.model.request.DiscountProductOrderRequestDTO;
-import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -22,11 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import static com.study.order.domain.entity.order.Status.ORDER_PROGRESS;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class OrderEventProducer {
 
 	private static final String REDISSON_KEY_PREFIX = "lock_";
@@ -38,16 +41,37 @@ public class OrderEventProducer {
 
 	private final Random random = new Random();
 
+
+	private final Executor taskExecutor;
 	private final OrderService orderService;
 	private final RedisService redisService;
 	private final RedissonClient redissonClient;
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 
-	public void createOrder(DiscountProductOrderRequestDTO request) {
+	public OrderEventProducer(@Qualifier("taskExecutor")
+	                          Executor taskExecutor,
+	                          OrderService orderService,
+	                          RedisService redisService,
+	                          RedissonClient redissonClient,
+	                          KafkaTemplate<String, Object> kafkaTemplate) {
+		this.taskExecutor = taskExecutor;
+		this.orderService = orderService;
+		this.redisService = redisService;
+		this.redissonClient = redissonClient;
+		this.kafkaTemplate = kafkaTemplate;
+	}
 
-		if (random.nextDouble() < 0.2) {
+	@Async("taskExecutor")
+	public CompletableFuture<Void> createOrder(DiscountProductOrderRequestDTO request) {
+
+		try {
+
+			if (random.nextDouble() < 0.2) {
 //			return;
-			throw new OrderBeenCanceledException();
+				throw new OrderBeenCanceledException();
+			}
+		} catch (OrderBeenCanceledException e) {
+			return CompletableFuture.failedFuture(new OrderBeenCanceledException());
 		}
 
 		String key = PRODUCT_KEY_PREFIX + request.product().productId();
@@ -122,6 +146,8 @@ public class OrderEventProducer {
 				sendEvent(ADDRESS_STORE_EVENT, event);
 			}
 		}
+
+		return CompletableFuture.completedFuture(null);
 	}
 
 	public void handleInventoryManagementEvent(PaymentResultEvent event) {

@@ -27,6 +27,7 @@ public enum Error {
 	ALREADY_SHIPPING(3002, "이미 배송 중인 상품입니다."),
 	RETURN_PERIOD_PASSED(3003, "반품 기간이 지났습니다."),
 	ORDER_BEEN_CANCELED(3004, "주문이 취소되었습니다."),
+	BEFORE_PURCHASE_TIME(3005, "구매 가능 시간이 아닙니다."),
 
 	INTERNAL_SERVER_ERROR(9999, "서버 오류입니다."),
 	CIRCUIT_BREAKER_OPEN(10000, "이용량 증가로 현재 서비스가 불가능합니다."),

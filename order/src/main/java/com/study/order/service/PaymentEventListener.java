@@ -7,7 +7,9 @@ import org.redisson.api.RedissonClient;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import static com.study.order.domain.entity.order.Status.PAYMENT_COMPLETED;
+import java.time.ZonedDateTime;
+
+import static com.study.order.domain.entity.order.Status.*;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +19,7 @@ public class PaymentEventListener {
 	private static final String REDISSON_KEY_PREFIX = "lock_";
 	private static final String PRODUCT_KEY_PREFIX = "product:";
 
+	private final OrderService orderService;
 	private final RedisService redisService;
 	private final RedissonClient redissonClient;
 	private final OrderEventProducer orderEventProducer;
@@ -36,16 +39,20 @@ public class PaymentEventListener {
 
 				String value = redisService.getValue(key);
 
-				int currentQuantity = Integer.parseInt(value.split(":")[0]) + event.quantity();
-				int price = Integer.parseInt(value.split(":")[1]);
+				int currentQuantity = Integer.parseInt(value.split("\\|")[0]) + event.quantity();
+				int price = Integer.parseInt(value.split("\\|")[1]);
+				ZonedDateTime saleDateTime = ZonedDateTime.parse(value.split("\\|")[2]);
 
-				redisService.storeInRedis(key, currentQuantity + ":" + price);
+				redisService.storeInRedis(key, currentQuantity + "|" + price + "|" + saleDateTime);
 
 			} finally {
 				lock.unlock();
 			}
-		}
 
-		orderEventProducer.handleInventoryManagementEvent(event);
+			orderService.store(event.orderId(), PAYMENT_FAILED);
+		} else {
+			orderEventProducer.handleInventoryManagementEvent(event);
+			orderService.store(event.orderId(), ORDER_COMPLETED);
+		}
 	}
 }

@@ -17,6 +17,7 @@ import com.study.order.model.response.order.ProductOrderResponseDTO;
 import com.study.order.repository.OrderDetailRepository;
 import com.study.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,6 +147,7 @@ public class OrderService {
 	}
 
 	@Transactional
+	@Async("taskExecutor")
 	public void store(Long id, Status status) {
 
 		Order order = orderRepository.findById(id).orElseThrow(NotFoundOrderException::new);

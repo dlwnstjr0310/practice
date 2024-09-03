@@ -1,5 +1,8 @@
 server:
   port: 8082
+  tomcat:
+    threads:
+      max: 8
 
 spring:
   datasource:
@@ -12,8 +15,8 @@ spring:
     hikari:
       pool-name: hikari-pool
       catalog: product
-      minimum-idle: 5
-      maximum-pool-size: 100
+      #      minimum-idle: 5
+      maximum-pool-size: 9
       data-source-properties:
         idleTimeout: 600000
         maxLifetime: 1800000

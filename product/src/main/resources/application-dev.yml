@@ -1,0 +1,107 @@
+server:
+  port: 8082
+  tomcat:
+    threads:
+      max: 8
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: hikari-pool
+      catalog: product
+      #      minimum-idle: 5
+      maximum-pool-size: 9
+      data-source-properties:
+        idleTimeout: 600000
+        maxLifetime: 1800000
+        minimumIdle: 5
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+      connection-test-query: select 1
+      auto-commit: true
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
+        #        show-sql: true
+        show-sql: false
+        #        format_sql: true
+        format_sql: false
+        globally_quoted_identifiers: true
+        globally_quoted_identifiers_skip_column_definitions: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  config:
+    import: classpath:application-key.yml
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: order-group
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.trusted.packages: com.study.product.domain.event
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    listener:
+      ack-mode: record
+
+---
+
+springdoc:
+  use-fqn: true
+  cache:
+    disabled: true
+  api-docs:
+    path: /api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /index.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    groups-order: asc
+    display-request-duration: true
+    doc-expansion: none
+    disable-swagger-default-url: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+---
+
+logging:
+  level:
+    org.hibernate:
+      #      SQL: debug
+      SQL: error
+      type: error
+    com.zaxxer.hikari.HikariDataSource: error
+
+---
+
+eureka:
+  instance:
+    initial-status: up
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
+    region: ap-northeast-2

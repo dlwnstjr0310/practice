@@ -5,9 +5,13 @@ eureka:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
     region: ap-northeast-2
-    registry-fetch-interval-seconds: 5
+#    registry-fetch-interval-seconds: 5
 
 spring:
+  data:
+    redis:
+      port: ${REDIS_PORT}
+      host: ${REDIS_HOST}
   config:
     import: classpath:application-key.yml
   application:
@@ -31,6 +35,22 @@ spring:
             - Path=${SECOND_PATH}
           filters:
             - GatewayHeaderFilter
+        - id: ${THIRD_ID}
+          uri: lb://${THIRD_URI}
+          predicates:
+            - Path=${THIRD_PATH}
+          filters:
+            - GatewayHeaderFilter
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, info
+  metrics:
+    tags:
+      application: gateway-server
 
 logging:
   level:

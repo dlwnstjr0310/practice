@@ -1,5 +1,8 @@
 server:
   port: 8082
+  tomcat:
+    threads:
+      max: 8
 
 spring:
   datasource:
@@ -12,8 +15,8 @@ spring:
     hikari:
       pool-name: hikari-pool
       catalog: product
-      minimum-idle: 5
-      maximum-pool-size: 100
+      #      minimum-idle: 5
+      maximum-pool-size: 9
       data-source-properties:
         idleTimeout: 600000
         maxLifetime: 1800000
@@ -33,12 +36,34 @@ spring:
       hibernate:
         jdbc:
           time_zone: Asia/Seoul
-        show-sql: true
-        format_sql: true
+        #        show-sql: true
+        show-sql: false
+        #        format_sql: true
+        format_sql: false
         globally_quoted_identifiers: true
         globally_quoted_identifiers_skip_column_definitions: true
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   config:
     import: classpath:application-key.yml
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: order-group
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.trusted.packages: com.study.product.domain.event
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    listener:
+      ack-mode: record
+
 ---
 
 springdoc:
@@ -65,7 +90,8 @@ springdoc:
 logging:
   level:
     org.hibernate:
-      SQL: debug
+      #      SQL: debug
+      SQL: error
       type: error
     com.zaxxer.hikari.HikariDataSource: error
 
@@ -79,4 +105,3 @@ eureka:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
     region: ap-northeast-2
-    registry-fetch-interval-seconds: 5

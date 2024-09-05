@@ -1,12 +1,17 @@
 package com.study.product.controller;
 
 import com.study.product.controller.docs.ProductControllerDocs;
+import com.study.product.model.request.DiscountSaleProductRequestDTO;
+import com.study.product.model.request.ProductOrderRequestDTO;
 import com.study.product.model.request.ProductRequestDTO;
-import com.study.product.model.response.ProductResponseDTO;
+import com.study.product.model.request.SearchConditionDTO;
+import com.study.product.model.response.ProductOrderResponseDTO;
+import com.study.product.model.response.ProductSearchResultDTO;
 import com.study.product.model.response.Response;
 import com.study.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +23,6 @@ public class ProductController implements ProductControllerDocs {
 
 	private final ProductService productService;
 
-	//todo: 권한 추가하기
 	@PostMapping
 	public Response<Long> createProduct(@Valid @RequestBody ProductRequestDTO request) {
 
@@ -27,28 +31,40 @@ public class ProductController implements ProductControllerDocs {
 				.build();
 	}
 
-	@PatchMapping("/{id}")
-	public Response<ProductResponseDTO> modifyProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO request) {
+	@PostMapping("/set-up")
+	public Response<Void> setUpDiscountSaleProduct(@Valid @RequestBody DiscountSaleProductRequestDTO request) {
 
-		return Response.<ProductResponseDTO>builder()
+		productService.setUpDiscountSaleProduct(request);
+		return Response.<Void>builder()
+				.build();
+	}
+
+	@PatchMapping("/{id}")
+	public Response<Long> modifyProduct(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO request) {
+
+		return Response.<Long>builder()
 				.data(productService.modifyProduct(id, request))
 				.build();
 	}
 
-	//todo: 추후 페이징, 검색도 추가하기
-	@GetMapping
-	public Response<List<ProductResponseDTO>> getCurrentSaleProductList() {
+	@PatchMapping("/order")
+	public List<ProductOrderResponseDTO> modifyProductStock(@Valid @RequestBody List<ProductOrderRequestDTO> request) {
 
-		return Response.<List<ProductResponseDTO>>builder()
-				.data(productService.getCurrentSaleProductList())
+		return productService.modifyProductStock(request);
+	}
+
+	@GetMapping
+	public Response<ProductSearchResultDTO> getCurrentSaleProductList(Pageable pageable,
+	                                                                  SearchConditionDTO searchCondition) {
+
+		return Response.<ProductSearchResultDTO>builder()
+				.data(productService.getCurrentSaleProductList(pageable, searchCondition))
 				.build();
 	}
 
-	@GetMapping("/{id}")
-	public Response<ProductResponseDTO> getProductDetail(@PathVariable Long id) {
+	@GetMapping("/order")
+	public List<ProductOrderResponseDTO> getProductOrderList(@Valid @RequestParam List<Long> productIdList) {
 
-		return Response.<ProductResponseDTO>builder()
-				.data(productService.getProductDetail(id))
-				.build();
+		return productService.getProductOrderList(productIdList);
 	}
 }

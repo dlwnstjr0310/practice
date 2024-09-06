@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @CircuitBreaker(name = "product")
-@FeignClient(name = "product-service", url = "${service.url.product}")
+@FeignClient(name = "product-server")
 public interface ProductClient {
 
 	@PatchMapping("/product/order")

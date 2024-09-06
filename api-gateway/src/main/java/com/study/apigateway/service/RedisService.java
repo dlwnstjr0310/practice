@@ -1,4 +1,4 @@
-package com.study.apigateway.auth.util;
+package com.study.apigateway.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,6 +12,7 @@ public class RedisService {
 
 	private static final String SEPARATOR = ":REFRESH";
 	private static final String BLACKLIST = "BLACKLIST";
+	private static final String QUEUE = "QUEUE";
 
 	private final RedisTemplate<String, Object> redisTemplate;
 
@@ -22,6 +23,27 @@ public class RedisService {
 
 	public void storeBlackListInRedis(String token, Long expiresIn) {
 		redisTemplate.opsForValue().set(token, BLACKLIST, expiresIn, TimeUnit.MILLISECONDS);
+	}
+
+	public void storeZset(String value) {
+		redisTemplate.opsForZSet().add(QUEUE, value, System.currentTimeMillis());
+	}
+
+	public Long getRank(String userId) {
+		return redisTemplate.opsForZSet().rank(QUEUE, userId);
+	}
+
+	public String getOrderStatus(String key) {
+		Object value = redisTemplate.opsForValue().getAndDelete(key);
+		return value != null ? value.toString() : null;
+	}
+
+	public void removeOrderStatus(String key) {
+		redisTemplate.delete(key);
+	}
+
+	public void removeZset(String value) {
+		redisTemplate.opsForZSet().remove(QUEUE, value);
 	}
 
 	public boolean isBlackList(String token) {

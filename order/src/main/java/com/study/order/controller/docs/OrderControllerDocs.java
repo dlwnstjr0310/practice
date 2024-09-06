@@ -1,6 +1,5 @@
 package com.study.order.controller.docs;
 
-import com.study.order.model.request.DiscountProductOrderRequestDTO;
 import com.study.order.model.request.OrderRequestDTO;
 import com.study.order.model.response.Response;
 import com.study.order.model.response.order.OrderResponseDTO;
@@ -24,13 +23,6 @@ public interface OrderControllerDocs {
 	})
 	@PostMapping("/order")
 	Response<Void> createOrder(@Valid @RequestBody OrderRequestDTO request);
-
-	@Operation(summary = "할인상품 선착순 구매", description = "할인하는 상품을 선착순으로 구매하는 API 입니다.")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "주문 생성 성공", content = @Content(schema = @Schema(implementation = Response.class)))
-	})
-	@PostMapping("/order/discount")
-	Response<Void> createDiscountProductOrder(@Valid @RequestBody DiscountProductOrderRequestDTO request);
 
 	@Operation(summary = "주문 내역 수정", description = "주문 전체의 상태를 일괄적으로 변경하는 API 입니다.")
 	@ApiResponses(value = {
@@ -58,5 +50,5 @@ public interface OrderControllerDocs {
 	})
 	@GetMapping("/{id}")
 	Response<OrderResponseDTO> getOrderDetailList(@PathVariable Long id);
-	
+
 }

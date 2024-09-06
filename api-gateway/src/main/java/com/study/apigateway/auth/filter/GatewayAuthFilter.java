@@ -11,13 +11,13 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Component
-public class GatewayHeaderFilter extends AbstractGatewayFilterFactory<GatewayHeaderFilter.Config> {
+public class GatewayAuthFilter extends AbstractGatewayFilterFactory<GatewayAuthFilter.Config> {
 
 	private static final String[] EXCLUDED_PATHS = {"/", "/member/join", "/member/mail-certification/send", "/member/mail-certification/verify", "/member/login"};
 
 	private final TokenParser tokenParser;
 
-	public GatewayHeaderFilter(TokenParser tokenParser) {
+	public GatewayAuthFilter(TokenParser tokenParser) {
 		super(Config.class);
 		this.tokenParser = tokenParser;
 	}

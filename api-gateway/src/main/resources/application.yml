@@ -1,6 +1,7 @@
 eureka:
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
+    instance-id: gateway-server
   client:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/
@@ -28,20 +29,26 @@ spring:
           predicates:
             - Path=${FIRST_PATH}
           filters:
-            - GatewayHeaderFilter
+            - GatewayAuthFilter
         - id: ${SECOND_ID}
           uri: lb://${SECOND_URI}
           predicates:
             - Path=${SECOND_PATH}
           filters:
-            - GatewayHeaderFilter
+            - GatewayAuthFilter
         - id: ${THIRD_ID}
           uri: lb://${THIRD_URI}
           predicates:
             - Path=${THIRD_PATH}
           filters:
-            - GatewayHeaderFilter
-
+            - GatewayAuthFilter
+            - GatewayOrderFilter
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
 
 management:
   endpoints:

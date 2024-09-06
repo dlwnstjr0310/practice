@@ -4,6 +4,7 @@ import com.study.apigateway.auth.exception.token.DifferentTokenVersionException;
 import com.study.apigateway.auth.exception.token.ExpiredTokenException;
 import com.study.apigateway.auth.exception.token.InvalidTokenException;
 import com.study.apigateway.auth.exception.token.RegisteredInBlackListException;
+import com.study.apigateway.service.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -96,6 +97,12 @@ public class TokenParser {
 			e.printStackTrace();
 			throw new InvalidTokenException(token);
 		}
+	}
+
+	public String getMemberId(ServerHttpRequest request) {
+		String jwt = getJwt(request);
+		Claims claims = parseClaims(jwt);
+		return claims.getSubject();
 	}
 
 }

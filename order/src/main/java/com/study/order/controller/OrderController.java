@@ -1,7 +1,6 @@
 package com.study.order.controller;
 
 import com.study.order.controller.docs.OrderControllerDocs;
-import com.study.order.model.request.DiscountProductOrderRequestDTO;
 import com.study.order.model.request.OrderRequestDTO;
 import com.study.order.model.response.Response;
 import com.study.order.model.response.order.OrderResponseDTO;
@@ -26,16 +25,6 @@ public class OrderController implements OrderControllerDocs {
 	public Response<Void> createOrder(@Valid @RequestBody OrderRequestDTO request) {
 
 		orderService.createOrder(request);
-		return Response.<Void>builder()
-				.code(HttpStatus.CREATED.value())
-				.message(HttpStatus.CREATED.getReasonPhrase())
-				.build();
-	}
-
-	@PostMapping("/discount")
-	public Response<Void> createDiscountProductOrder(@Valid @RequestBody DiscountProductOrderRequestDTO request) {
-
-		orderEventProducer.createOrder(request);
 		return Response.<Void>builder()
 				.code(HttpStatus.CREATED.value())
 				.message(HttpStatus.CREATED.getReasonPhrase())

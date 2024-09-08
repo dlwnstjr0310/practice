@@ -19,6 +19,9 @@
 
 작업 기간 : 24/08/07 ~ 24/09/04 ( 총 4주 )
 
+https://img.shields.io/github/languages/top/dlwnstjr0310/practice
+
+
 ### API 문서
 
 - [바로가기 (PostMan)](https://documenter.getpostman.com/view/27127895/2sA3s7k9b8)

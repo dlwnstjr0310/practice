@@ -13,9 +13,10 @@
     - [동시성 제어로 인한 성능 저하](#issue-2)
         - [Synchronized + 캐싱](#synchronized+caching)
         - [레디스 분산 락을 통한 동시성 제어, Kafka 를 통한 이벤트 기반 관리](#redis+kafka)
+            - [모든 로직을 이벤트로 처리](#event-driven-process)
+            - [Order 정보 저장 후 나머지 로직은 이벤트로 처리 (최종 선택)](#stable-event-driven-process)
     - [컨텍스트 스위칭으로 인한 성능 저하](#issue-3)
 - [성능개선 결과 요약 그래프](#주문-API-성능개선-결과-요약)
-
 
 <br>
 
@@ -191,7 +192,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 **재고 동시성 문제**
 
 - 원인
-    - 10,000 명의 사용자가 동시에 한 API에 접근했을 때, 각 스레드는 자신이 최초로 조회한 시점의 데이터를 기반으로 처리하기 때문
+    - 다수의 스레드가 동시에 한 공유 자원에 접근하게 될 때, 각각의 스레드가 가지고 있는 정보가 서로 같거나 다름
 - 해결 과정
     - **synchronized 를 이용한 API 락 사용**
         - 동시성 문제는 해결할 수 있었음
@@ -260,7 +261,8 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 </div>
 
-- 결국 DB에 접근하게 되면 빠른 응답은 불가능할것이라 판단하여, 주문이 들어오면 이벤트를 발생시키고, 이벤트를 구독한 마이크로 서비스들이 각자의 로직을 통하여 DB에 접근하도록 설정
+- DB에 접근하게 되면 빠른 응답은 불가능할것이라 판단
+- 주문이 들어오면 이벤트를 발생 -> 이벤트를 구독한 마이크로 서비스들이 각자의 로직을 실행하도록 수정
 - avg : 247.41ms / tps : 917.95
 - [컨텍스트 스위칭 이슈 해결과정](#issue-3)
 
@@ -284,9 +286,9 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 </div>
 
-- 결제 완료 후 주문 데이터가 DB에 안전하게 저장되기 전에 시스템 장애가 발생할 경우 데이터가 유실될 수 있음.
-- 주문 처리가 가장 중요한 비즈니스 로직이며, 데이터의 일관성과 안정성이 우선인 현재 프로그램에서 데이터 유실의 위험은 감수할 수 없다고 판단
-- 성능이 약간 저하되더라도 **안정성을 보장**하기 위하여 주문 즉시 DB에 저장하도록 변경
+- 캐시를 사용하는 경우, 캐시에 저장된 데이터가 유실될 수 있음
+- 주문 처리가 가장 중요한 비즈니스 로직이며, 데이터의 일관성과 안정성이 우선인 현재 서비스에서 데이터 유실의 위험은 감수할 수 없다고 판단
+- 성능이 저하되더라도 **안정성을 보장**하기 위하여 주문 즉시 DB에 저장하도록 변경
 - avg : 387.72ms / tps : 466.78
 
 <details>
@@ -317,25 +319,17 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 - 해결 과정
 
-1. **DB Active Connection 갯수 설정**
-    - HikariCP의 Active Connection 갯수가 4에서 더이상 올라가지 않는것을 발견
-    - 동시에 많은 트래픽이 몰렸을 때, 효율적인 처리를 위해 커넥션 풀의 크기를 HikariCP에서 권장하는 DB 커넥션 수 공식에 따라 커넥션 풀 크기를 9로 설정
-    - 설정 후에도 마찬가지로 active connection 최댓값이 4개임을 확인
-
-2. **CPU 코어 수와의 연관관계 확인**
-    - 10코어에서도 동일한 문제가 발생하여 CPU 코어 수와 직접적인 관련이 없음을 확인
-
-3. **커넥션 풀 크기 조정**
-    - 커넥션 풀의 크기를 줄이거나 늘려도 성능 차이가 없음을 확인
+1. **HikariCP Active Connection 설정**
+    - DB Connection 갯수가 4에서 더이상 올라가지 않는 문제 인지
+    - CPU 코어 수와도 관계가 없고, 커넥션 풀 크기를 조정해도 아무런 변화가 없음
     - 스레드 수 또는 다른 요소가 병목 지점이라 판단
 
-4. **사용중인 스레드 수 확인**
-    - 기본 Executor 인 SimpleAsyncTaskExecutor 로 인해, 동시 요청 수 만큼 스레드가 생성되는것을 확인
-    - 하이퍼스레딩이 가능한 cpu 를 사용중이고, 주 작업이 I/O 바운드이기 때문에
-    - corePoolSize 를 8로, maxPoolSize 를 16 으로 설정하여 불필요한 스레드 생성을 방지한 customExecutor 생성
+2. **스레드 설정 확인 및 수정**
+    - 기본 Executor가 동시 요청 수만큼 스레드를 생성해 불필요한 오버헤드 발생
+    - 불필요한 스레드 생성을 방지하기 위해 corePoolSize 8, maxPoolSize 16으로 설정한 customExecutor 를 명시적으로 지정해 사용
 
-5. **API 전체를 비동기 병렬 작업으로 변경**
-    - 주문 생성 시 사용할 executor 를 명시적으로 지정해준 후 실행
+3. **API 전체를 비동기 병렬 작업으로 변경**
+    - 주문 생성 API 전체를 비동기적으로 처리
     - 기존 로직 5만건 평균 응답 속도 : 254ms , tps : 917
     - 신규 로직 5만건 평균 응답 속도 : 61.15ms , tps : 3.04k
 
@@ -361,23 +355,23 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 <strong> 케이스 별 테스트 결과 이미지 </strong>
 </summary>
 
-### [case 1](#issue-1)
+### [case 1 (Synchronized)](#issue-1)
 
 ![](img/synchronized.png)
 
-### [case 2](#synchronized+caching)
+### [case 2 (Synchronized + Caching)](#synchronized+caching)
 
 ![](img/synchronized_redis_nonBlock.png)
 
-### [case 3](#event-driven-process)
+### [case 3 (Redis Lock + Kafka)](#event-driven-process)
 
 ![](img/kafka_result.png)
 
-### [case 4](#issue-3)
+### [case 4 (Redis Lock + Kafka + Context Switching)](#issue-3)
 
 ![](img/context_switching.png)
 
-### [case 5](#stable-event-driven-process)
+### [case 5 (Redis Lock + Kafka + Stable Blocking)](#stable-event-driven-process)
 
 ![](img/stable_event.png)
 

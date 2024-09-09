@@ -12,7 +12,7 @@
     - [재고 동시성 문제](#issue-1)
     - [동시성 제어로 인한 성능 저하](#issue-2)
         - [Synchronized + 캐싱](#synchronized+caching)
-        - [레디스 분산 락을 통한 동시성 제어, Kafka 를 통한 이벤트 기반 관리](#event-driven-process)
+        - [레디스 분산 락을 통한 동시성 제어, Kafka 를 통한 이벤트 기반 관리](#redis+kafka)
     - [컨텍스트 스위칭으로 인한 성능 저하](#issue-3)
 - [성능개선 결과 요약 그래프](#주문-API-성능개선-결과-요약)
 
@@ -243,7 +243,11 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 <br>
 
+<div id="redis+kafka">
+
 ### 2. 레디스 분산 락을 통한 동시성 제어, Kafka 를 통한 이벤트 기반 관리
+
+</div>
 
 - Redis의 분산 락을 통하여 동시성 문제를 해결
 - 이벤트 기반 통신으로 느슨한 결합을 유지하면서 빠른 응답을 제공
@@ -361,7 +365,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 ![](img/synchronized.png)
 
-### [case 2](#issue-2)
+### [case 2](#synchronized+caching)
 
 ![](img/synchronized_redis_nonBlock.png)
 

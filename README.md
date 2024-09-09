@@ -16,6 +16,9 @@
     - [컨텍스트 스위칭으로 인한 성능 저하](#issue-3)
 - [성능개선 결과 요약 그래프](#주문-API-성능개선-결과-요약)
 
+
+<br>
+
 ## 개요
 
 MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트래픽 처리에 중점을 둔 애플리케이션 <br>
@@ -32,7 +35,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 - [바로가기 (PostMan)](https://documenter.getpostman.com/view/27127895/2sA3s7k9b8)
 - [바로가기 (Notion)](https://ossified-order-470.notion.site/API-b1d2dc7a6fff404098dda1db0b81029d?pvs=4)
 
----
+<br>
 
 ## 기술 스택
 
@@ -69,6 +72,8 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 **DevOps** &nbsp; : &nbsp;
 <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
 <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git">
+
+<br>
 
 ## 기술적 의사결정
 
@@ -123,6 +128,8 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 </details>
 
+<br>
+
 ## ERD
 
 <details>
@@ -133,7 +140,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 ![](img/erd_2.png)
 </details>
 
----
+<br>
 
 ## 아키텍처
 
@@ -145,7 +152,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 ![](img/아키텍처.drawio.png)
 </details>
 
----
+<br>
 
 ## 주요 기능
 
@@ -175,6 +182,8 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 </details>
 
+<br>
+
 ## 트러블슈팅
 
 ### Issue #1
@@ -197,9 +206,10 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 ![](img/synchronized.png)
 </details>
 
+<br>
+
 ---
 
-<br>
 <br>
 
 ### Issue #2
@@ -231,15 +241,14 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 ![](img/synchronized_redis_nonBlock.png)
 </details>
 
----
-
-<br>
 <br>
 
 ### 2. 레디스 분산 락을 통한 동시성 제어, Kafka 를 통한 이벤트 기반 관리
 
 - Redis의 분산 락을 통하여 동시성 문제를 해결
 - 이벤트 기반 통신으로 느슨한 결합을 유지하면서 빠른 응답을 제공
+
+<br>
 
 <div id="event-driven-process">
 
@@ -263,7 +272,6 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 ![](img/kafka_result.png)
 </details>
 
-<br>
 <br>
 
 <div id="stable-event-driven-process">
@@ -290,7 +298,11 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 ![](img/stable_event.png)
 </details>
 
+<br>
+
 ---
+
+<br>
 
 ### Issue #3
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-@FeignClient(name = "order-service", url = "${service.url.order}")
+@FeignClient(name = "order-server")
 public interface OrderClient {
 
 	@CircuitBreaker(name = "order")

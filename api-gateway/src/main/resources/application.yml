@@ -1,6 +1,7 @@
 eureka:
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
+    instance-id: gateway-server
   client:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/

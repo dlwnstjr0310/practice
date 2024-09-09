@@ -6,6 +6,6 @@ import org.springframework.http.HttpStatus;
 
 public class TimeoutException extends ServerException {
 	public TimeoutException() {
-		super(Error.GATEWAY_TIMEOUT, HttpStatus.GATEWAY_TIMEOUT);
+		super(Error.SERVER_TIMEOUT, HttpStatus.GATEWAY_TIMEOUT);
 	}
 }

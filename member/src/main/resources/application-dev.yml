@@ -142,7 +142,8 @@ security:
 eureka:
   instance:
     initial-status: up
-    prefer-ip-address: true
+    prefer-ip-address: false
+    instance-id: member-server
   client:
     service-url:
       defaultZone: http://${EUREKA_NAME}:${EUREKA_PORT}/${EUREKA_HOST}/

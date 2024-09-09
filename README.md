@@ -3,7 +3,7 @@
 ## 목차
 
 - [개요](#개요)
-- [성능개선 결과 요약 그래프](#주문-API-성능개선-결과-요약)
+- [결과 요약](#주문-API-성능개선-결과-요약)
 - [기술스택](#기술-스택)
 - [기술적 의사결정](#기술적-의사결정)
 - [ERD](#ERD)
@@ -40,23 +40,23 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 <strong> 케이스 별 테스트 결과 이미지 </strong>
 </summary>
 
-### [case 1 (Synchronized)](#issue-1)
+### [case 1 : Synchronized 사용](#issue-1)
 
 ![](img/synchronized.png)
 
-### [case 2 (Synchronized + Caching)](#synchronized+caching)
+### [case 2 : Synchronized + Caching](#synchronized+caching)
 
 ![](img/synchronized_redis_nonBlock.png)
 
-### [case 3 (Redis Lock + Kafka)](#event-driven-process)
+### [case 3 : Redis Lock + Kafka](#event-driven-process)
 
 ![](img/kafka_result.png)
 
-### [case 4 (Redis Lock + Kafka + Context Switching)](#issue-3)
+### [case 4 : Redis Lock + Kafka + Context Switching 이슈 해결](#issue-3)
 
 ![](img/context_switching.png)
 
-### [case 5 (Redis Lock + Kafka + Stable Blocking)](#stable-event-driven-process)
+### [case 5 : Redis Lock + Kafka + Stable Blocking](#stable-event-driven-process)
 
 ![](img/stable_event.png)
 

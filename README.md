@@ -3,6 +3,7 @@
 ## 목차
 
 - [개요](#개요)
+- [성능개선 결과 요약 그래프](#주문-API-성능개선-결과-요약)
 - [기술스택](#기술-스택)
 - [기술적 의사결정](#기술적-의사결정)
 - [ERD](#ERD)
@@ -16,7 +17,6 @@
             - [모든 로직을 이벤트로 처리](#event-driven-process)
             - [Order 정보 저장 후 나머지 로직은 이벤트로 처리 (최종 선택)](#stable-event-driven-process)
     - [컨텍스트 스위칭으로 인한 성능 저하](#issue-3)
-- [성능개선 결과 요약 그래프](#주문-API-성능개선-결과-요약)
 
 <br>
 
@@ -24,12 +24,43 @@
 
 MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트래픽 처리에 중점을 둔 애플리케이션 <br>
 
+작업 기간 : 24/08/07 ~ 24/09/04 ( 총 4주 )
+
 **목표**
 
 - 대규모 요청이 동시에 들어왔을 때 데이터 정합성을 유지하며 성능 저하 없이 처리
 - Redis 분산 락, Kafka 를 통한 비동기적인 이벤트 처리를 활용하여 확장성과 데이터 일관성을 보장
 
-작업 기간 : 24/08/07 ~ 24/09/04 ( 총 4주 )
+### 주문 API 성능개선 결과 요약
+
+![](img/naming_graph.png)
+
+<details>
+<summary>
+<strong> 케이스 별 테스트 결과 이미지 </strong>
+</summary>
+
+### [case 1 (Synchronized)](#issue-1)
+
+![](img/synchronized.png)
+
+### [case 2 (Synchronized + Caching)](#synchronized+caching)
+
+![](img/synchronized_redis_nonBlock.png)
+
+### [case 3 (Redis Lock + Kafka)](#event-driven-process)
+
+![](img/kafka_result.png)
+
+### [case 4 (Redis Lock + Kafka + Context Switching)](#issue-3)
+
+![](img/context_switching.png)
+
+### [case 5 (Redis Lock + Kafka + Stable Blocking)](#stable-event-driven-process)
+
+![](img/stable_event.png)
+
+</details>
 
 ### API 문서
 
@@ -344,36 +375,5 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 ![](img/context_switching.png)
 </details>
 
----
-
-### 주문 API 성능개선 결과 요약
-
-![](img/naming_graph.png)
-
-<details>
-<summary>
-<strong> 케이스 별 테스트 결과 이미지 </strong>
-</summary>
-
-### [case 1 (Synchronized)](#issue-1)
-
-![](img/synchronized.png)
-
-### [case 2 (Synchronized + Caching)](#synchronized+caching)
-
-![](img/synchronized_redis_nonBlock.png)
-
-### [case 3 (Redis Lock + Kafka)](#event-driven-process)
-
-![](img/kafka_result.png)
-
-### [case 4 (Redis Lock + Kafka + Context Switching)](#issue-3)
-
-![](img/context_switching.png)
-
-### [case 5 (Redis Lock + Kafka + Stable Blocking)](#stable-event-driven-process)
-
-![](img/stable_event.png)
-
-</details>
-
+<br>
+<br>

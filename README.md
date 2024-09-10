@@ -37,7 +37,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 <details>
 <summary>
-<strong> 케이스 별 테스트 결과 이미지 </strong>
+<strong> 케이스 별 테스트 결과 상세 </strong>
 </summary>
 
 ### [case 1 : Synchronized 사용](#issue-1)
@@ -164,25 +164,13 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 ## ERD
 
-<details>
-<summary>
-<strong> 이미지 보기 </strong>
-</summary>
-
 ![](img/erd_2.png)
-</details>
 
 <br>
 
 ## 아키텍처
 
-<details>
-<summary>
-<strong> 이미지 보기 </strong>
-</summary>
-
 ![](img/아키텍처.drawio.png)
-</details>
 
 <br>
 

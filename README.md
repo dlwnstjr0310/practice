@@ -82,6 +82,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 <img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Data JPA">
 <img src="https://img.shields.io/badge/Feign%20Client-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Feign Client">
 <img src="https://img.shields.io/badge/Redisson-FF0000?style=for-the-badge&logo=redis&logoColor=white" alt="Redisson">
+<img src="https://img.shields.io/badge/JWT-white?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=black" alt="JWT">
 
 **Database** &nbsp; : &nbsp;
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">

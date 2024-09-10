@@ -164,7 +164,7 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 ## ERD
 
-![](img/erd_2.png)
+![](img/img.png)
 
 <br>
 

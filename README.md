@@ -40,23 +40,23 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 <strong> 케이스 별 테스트 결과 상세 </strong>
 </summary>
 
-### [case 1 : Synchronized 사용](#issue-1)
+### [case 1 (Issue#1)](#issue-1)
 
 ![](img/synchronized.png)
 
-### [case 2 : Synchronized + Caching](#synchronized+caching)
+### [case 2 (Issue#2-1)](#synchronized+caching)
 
 ![](img/synchronized_redis_nonBlock.png)
 
-### [case 3 : Redis Lock + Kafka](#event-driven-process)
+### [case 3 (Issue#2-2-1)](#event-driven-process)
 
 ![](img/kafka_result.png)
 
-### [case 4 : Redis Lock + Kafka + Context Switching 이슈 해결](#issue-3)
+### [case 4 (Issue#3)](#issue-3)
 
 ![](img/context_switching.png)
 
-### [case 5 : Redis Lock + Kafka + Stable Blocking](#stable-event-driven-process)
+### [case 5 (Issue#2-2-2)](#stable-event-driven-process)
 
 ![](img/stable_event.png)
 
@@ -176,11 +176,6 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
 
 ## 주요 기능
 
-<details>
-<summary>
-<strong> 내용 보기 </strong>
-</summary>
-
 - `API Gateway`
     - 단일 진입점을 구성하고, 모든 요청에 대한 라우팅과 JWT의 유효성 검사 담당
 - `Eureka Server`
@@ -199,8 +194,6 @@ MSA와 EDA를 적용하여 주문, 결제 시스템의 동시성 문제와 트�
     - Kafka 이벤트를 수신하여 재고를 수정
 - `Payment Service`
     - Kafka 이벤트를 수신하여 내부 로직을 실행하고, 결과 이벤트를 발행
-
-</details>
 
 <br>
 
